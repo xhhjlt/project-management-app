@@ -1,5 +1,35 @@
-function App() {
-  return <div className="App"></div>;
-}
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Board from 'routes/board';
+import Main from 'routes/main';
+import Root from 'routes/root';
+import Sign from 'routes/sign';
+import Welcome from 'routes/welcome';
 
-export default App;
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Root />,
+    children: [
+      {
+        index: true,
+        element: <Welcome />,
+      },
+      {
+        path: 'sign',
+        element: <Sign />,
+      },
+      {
+        path: 'main',
+        element: <Main />,
+      },
+      {
+        path: 'board',
+        element: <Board />,
+      },
+    ],
+  },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
