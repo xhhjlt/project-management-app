@@ -7,8 +7,9 @@ import EditProfile from 'routes/editProfile';
 import ErrorPage from 'routes/errorPage';
 import Main from 'routes/main';
 import Root from 'routes/root';
-import Sign from 'routes/sign';
+import SignIn from 'routes/signIn';
 import Welcome from 'routes/welcome';
+import SignUp from 'routes/signUp';
 
 export const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -23,8 +24,12 @@ const router = createBrowserRouter([
         element: <Welcome />,
       },
       {
-        path: 'sign',
-        element: <Sign />,
+        path: 'signIn',
+        element: <SignIn />,
+      },
+      {
+        path: 'signUp',
+        element: <SignUp />,
       },
       {
         path: 'edit',
