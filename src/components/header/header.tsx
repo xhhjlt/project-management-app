@@ -4,12 +4,15 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import React from 'react';
 import { ColorModeContext } from 'App';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { langToggle } from './langSlice';
 
 export default function Header() {
+  const language = useAppSelector((state) => state.lang.current);
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   const navigate = useNavigate();
   const colorMode = React.useContext(ColorModeContext);
-  const language = 'EN';
 
   return (
     <AppBar position="sticky">
@@ -23,7 +26,7 @@ export default function Header() {
         <Button size="large" color="inherit" onClick={() => navigate('/signUp')}>
           {language === 'EN' ? 'Sign Up' : 'Регистрация'}
         </Button>
-        <Button size="medium" color="inherit">
+        <Button size="medium" color="inherit" onClick={() => dispatch(langToggle())}>
           {language === 'EN' ? 'ru' : 'en'}
         </Button>
         <IconButton onClick={colorMode.toggleColorMode} color="inherit">
