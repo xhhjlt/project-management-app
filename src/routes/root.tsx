@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Footer from 'components/footer/footer';
+import Header from 'components/header/header';
 import { Outlet } from 'react-router-dom';
 
 export default function Root() {
@@ -11,7 +12,7 @@ export default function Root() {
         minHeight: '100vh',
       }}
     >
-      <header>header</header>
+      <Header />
       <Outlet />
       <Footer />
     </Box>
