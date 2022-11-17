@@ -27,7 +27,7 @@ export default function Header() {
             <Button size="large" color="inherit" onClick={() => navigate('/edit')}>
               {language === 'EN' ? 'Edit profile' : 'Редактировать профиль'}
             </Button>
-            <Button size="large" color="inherit" onClick={() => dispatch(logOut)}>
+            <Button size="large" color="inherit" onClick={() => dispatch(logOut())}>
               {language === 'EN' ? 'Sign Out' : 'Выход'}
             </Button>
             <Button size="large" color="inherit" onClick={() => alert('модалочка')}>
