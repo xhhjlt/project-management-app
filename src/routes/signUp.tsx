@@ -10,11 +10,13 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useNavigate } from 'react-router-dom';
 import { logIn } from 'components/header/authSlice';
 
 export default function SignUp() {
   const dispatch = useAppDispatch();
   const language = useAppSelector((state) => state.lang.current);
+  const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -94,7 +96,14 @@ export default function SignUp() {
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link
+                href="/signIn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/signIn');
+                }}
+                variant="body2"
+              >
                 {language === 'EN'
                   ? 'Already have an account? Sign in'
                   : 'Уже есть аккаунт? Войдите'}
