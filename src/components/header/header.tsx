@@ -1,7 +1,7 @@
 import { AppBar, Button, IconButton, Toolbar, Typography, useTheme } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ColorModeContext } from 'App';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
@@ -15,9 +15,26 @@ export default function Header() {
   const theme = useTheme();
   const navigate = useNavigate();
   const colorMode = React.useContext(ColorModeContext);
+  const [scrolled, setScrolled] = useState(window.scrollY);
+
+  useEffect(() => {
+    window.addEventListener('scroll', () => setScrolled(window.scrollY));
+  }, []);
 
   return (
-    <AppBar position="sticky">
+    <AppBar
+      position="sticky"
+      sx={Object.assign(
+        scrolled
+          ? {
+              borderRadius: '0% 0% 30px 30px',
+            }
+          : {},
+        {
+          transition: 'all 0.3s',
+        }
+      )}
+    >
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           PMA
