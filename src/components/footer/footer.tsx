@@ -52,8 +52,8 @@ export default function Footer() {
               gap: '3px',
             }}
           >
-            <GitHub sx={{ mt: '-5px' }} />
-            <Box>Eldar</Box>
+            <GitHub />
+            <span>Eldar</span>
           </Link>
           <Link
             color="inherit"
@@ -64,8 +64,8 @@ export default function Footer() {
               gap: '3px',
             }}
           >
-            <GitHub sx={{ mt: '-5px' }} />
-            <Box>Milena</Box>
+            <GitHub />
+            <span>Milena</span>
           </Link>
           <Link
             color="inherit"
@@ -76,8 +76,8 @@ export default function Footer() {
               gap: '3px',
             }}
           >
-            <GitHub sx={{ mt: '-5px' }} />
-            <Box>Alexander</Box>
+            <GitHub />
+            <span>Alexander</span>
           </Link>
         </Typography>
         <Typography variant="body1">© 2022</Typography>
