@@ -1,7 +1,7 @@
 import { User, UsersArg } from 'types/api/user';
 import API from '.';
 
-export const authApi = API.injectEndpoints({
+export const usersApi = API.injectEndpoints({
   endpoints: (builder) => ({
     allUsers: builder.query<Array<User>, unknown>({
       query: () => ({
@@ -27,3 +27,6 @@ export const authApi = API.injectEndpoints({
     }),
   }),
 });
+
+export const { useAllUsersQuery, useUserByIdQuery, useUpdateUserQuery, useDeleteUserQuery } =
+  usersApi;
