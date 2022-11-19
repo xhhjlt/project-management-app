@@ -1,20 +1,41 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../app/store';
 
+export type DeleteColumnType = {
+  isOpen: boolean;
+  columnId: string | null;
+};
+
+export type ItemModalType = {
+  isOpen: boolean;
+  columnId: string | null;
+};
+
+export type ItemType = {
+  id: string;
+  title: string;
+  description?: string;
+};
+
 export type ColumnType = {
   id: string;
   title?: string;
+  items?: Array<ItemType>;
 };
 
 export type BoardState = {
   columnModalOpen: boolean;
   boardColumns: Array<ColumnType>;
+  deleteColumnModalOpen: DeleteColumnType;
+  itemModalOpen: ItemModalType;
   // status: 'idle' | 'loading' | 'failed';
 };
 
 const initialState: BoardState = {
   columnModalOpen: false,
   boardColumns: [],
+  deleteColumnModalOpen: { isOpen: false, columnId: null },
+  itemModalOpen: { isOpen: false, columnId: null },
   // status: 'idle',
 };
 
@@ -31,12 +52,34 @@ export const boardSlice = createSlice({
     },
     addBoardColumn: (state, action: PayloadAction<ColumnType>) => {
       state.boardColumns.push(action.payload);
-      console.log('add:' + action.payload.id);
     },
-    deleteBoardColumn: (state, action: PayloadAction<ColumnType>) => {
-      console.log('remove:' + action.payload.id);
-      state.boardColumns = state.boardColumns.filter((el) => el.id !== action.payload.id);
-      console.log('стейт:' + { state });
+    deleteBoardColumn: (state) => {
+      state.boardColumns = state.boardColumns.filter(
+        (el) => el.id !== state.deleteColumnModalOpen.columnId
+      );
+    },
+    openDeleteColumnModal: (state, action: PayloadAction<ColumnType>) => {
+      state.deleteColumnModalOpen.isOpen = true;
+      state.deleteColumnModalOpen.columnId = action.payload.id;
+    },
+    closeDeleteColumnModal: (state) => {
+      state.deleteColumnModalOpen.isOpen = false;
+    },
+    openItemModal: (state, action: PayloadAction<ColumnType>) => {
+      state.itemModalOpen.isOpen = true;
+      state.itemModalOpen.columnId = action.payload.id;
+    },
+    closeItemModal: (state) => {
+      state.itemModalOpen.isOpen = false;
+    },
+    addNewItem: (state, action: PayloadAction<ItemType>) => {
+      const column = state.boardColumns.find((el) => el.id === state.itemModalOpen.columnId);
+      if (column) {
+        if (!column.items) {
+          column.items = [];
+        }
+        column.items!.push(action.payload);
+      }
     },
   },
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -56,10 +99,21 @@ export const boardSlice = createSlice({
   // },
 });
 
-export const { openColumnModal, closeColumnModal, addBoardColumn, deleteBoardColumn } =
-  boardSlice.actions;
+export const {
+  openColumnModal,
+  closeColumnModal,
+  addBoardColumn,
+  deleteBoardColumn,
+  openDeleteColumnModal,
+  closeDeleteColumnModal,
+  openItemModal,
+  closeItemModal,
+  addNewItem,
+} = boardSlice.actions;
 
 export const selectColumnModalOpen = (state: RootState) => state.board.columnModalOpen;
 export const selectBoardColumns = (state: RootState) => state.board.boardColumns;
+export const selectDeleteColumnModalOpen = (state: RootState) => state.board.deleteColumnModalOpen;
+export const selectItemModalOpen = (state: RootState) => state.board.itemModalOpen;
 
 export default boardSlice.reducer;

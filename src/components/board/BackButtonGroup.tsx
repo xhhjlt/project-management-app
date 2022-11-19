@@ -59,12 +59,12 @@ export const BackButtonGroup = () => {
   return (
     <Stack direction="row" spacing={2}>
       <Link component={RouterLink} to="/">
-        <Button variant="contained">
+        <Button variant="contained" sx={{ height: '98%' }}>
           <HomeRoundedIcon />
         </Button>
       </Link>
       <Link component={RouterLink} to="/main" underline="none">
-        <Button variant="contained" startIcon={<DashboardRoundedIcon />}>
+        <Button variant="contained" sx={{ height: '98%' }} startIcon={<DashboardRoundedIcon />}>
           Boards
         </Button>
       </Link>

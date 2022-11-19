@@ -4,6 +4,8 @@ import { ColumnModal } from './ColumnModal';
 import { useAppSelector, useAppDispatch } from 'app/hooks';
 import { openColumnModal, selectBoardColumns } from './boardSlice';
 import { Column } from './Column';
+import { DeleteColumnModal } from './DeleteColumnModal';
+import { ItemModal } from './ItemModal';
 
 export const TasksGrid = () => {
   const boardColumns = useAppSelector(selectBoardColumns);
@@ -24,6 +26,7 @@ export const TasksGrid = () => {
           width: 300,
           ...(boardColumns.length > 0 && { width: 'auto' }),
           height: 45,
+          userSelect: 'none',
         }}
         onClick={() => {
           dispatch(openColumnModal());
@@ -32,6 +35,8 @@ export const TasksGrid = () => {
         {boardColumns.length === 0 ? <span>Add column</span> : <AddRoundedIcon />}
       </Button>
       <ColumnModal />
+      <DeleteColumnModal />
+      <ItemModal />
     </Stack>
   );
 };

@@ -13,7 +13,7 @@ import {
 import { useCallback, useEffect } from 'react';
 import { Form } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { addBoardColumn, closeColumnModal, ColumnType, selectColumnModalOpen } from './boardSlice';
+import { addNewItem, closeItemModal, ItemType, selectItemModalOpen } from './boardSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { v4 as uuid } from 'uuid';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
@@ -33,18 +33,18 @@ const style = {
   gap: 3,
 };
 
-export const ColumnModal = () => {
+export const ItemModal = () => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitSuccessful },
-  } = useForm<ColumnType>();
-  const columnModalOpen = useAppSelector(selectColumnModalOpen);
+  } = useForm<ItemType>();
+  const itemModalOpen = useAppSelector(selectItemModalOpen);
   const dispatch = useAppDispatch();
 
   const handleClose = useCallback(() => {
-    dispatch(closeColumnModal());
+    dispatch(closeItemModal());
     reset();
   }, [dispatch, reset]);
 
@@ -52,17 +52,16 @@ export const ColumnModal = () => {
     handleClose();
   }, [handleClose, isSubmitSuccessful, reset]);
 
-  const onSubmit: SubmitHandler<ColumnType> = (data) => {
+  const onSubmit: SubmitHandler<ItemType> = (data) => {
     const small_id = uuid().slice(0, 8);
     data.id = small_id;
-    data.items = [];
-    dispatch(addBoardColumn(data));
+    dispatch(addNewItem(data));
   };
 
   return (
     <div>
       <Modal
-        open={columnModalOpen}
+        open={itemModalOpen.isOpen}
         onClose={handleClose}
         closeAfterTransition
         BackdropComponent={Backdrop}
@@ -70,7 +69,7 @@ export const ColumnModal = () => {
           timeout: 500,
         }}
       >
-        <Fade in={columnModalOpen}>
+        <Fade in={itemModalOpen.isOpen}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box sx={style}>
               <IconButton
@@ -85,20 +84,32 @@ export const ColumnModal = () => {
                 />
               </IconButton>
               <Typography variant="h6" component="h2" sx={{ textAlign: 'center' }}>
-                ADD COLUMN
+                ADD ITEM
               </Typography>
-              <FormControl>
+              <Stack spacing={2}>
+                <FormControl>
+                  <TextField
+                    label="Enter item title"
+                    defaultValue=""
+                    variant="outlined"
+                    sx={{ width: '100%' }}
+                    autoComplete="off"
+                    {...register('title', { required: true })}
+                    error={errors.title ? true : false}
+                    helperText={errors.title && 'You should provide a title'}
+                  />
+                </FormControl>
                 <TextField
-                  label="Enter column title"
+                  label="Enter item description"
                   defaultValue=""
                   variant="outlined"
                   sx={{ width: '100%' }}
                   autoComplete="off"
-                  {...register('title', { required: true })}
-                  error={errors.title ? true : false}
-                  helperText={errors.title && 'You should provide column title'}
+                  {...register('description')}
+                  multiline
+                  rows={5}
                 />
-              </FormControl>
+              </Stack>
               <Stack direction="row" justifyContent="space-evenly">
                 <Button
                   variant="contained"
