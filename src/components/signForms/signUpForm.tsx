@@ -11,9 +11,10 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useAppSelector } from 'app/hooks';
 import { useNavigate } from 'react-router-dom';
+import { currentLanguage } from 'components/header/langSlice';
 
 export default function SignUpForm() {
-  const language = useAppSelector((state) => state.lang.current);
+  const language = useAppSelector(currentLanguage);
   const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

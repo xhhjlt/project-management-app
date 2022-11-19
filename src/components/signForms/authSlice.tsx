@@ -17,7 +17,5 @@ const slice = createSlice({
 });
 
 export const { setToken, removeToken } = slice.actions;
-
 export default slice.reducer;
-
 export const isUserLoggedIn = (state: RootState) => Boolean(state.auth.token);

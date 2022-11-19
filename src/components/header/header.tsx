@@ -5,11 +5,11 @@ import React, { useEffect, useState } from 'react';
 import { ColorModeContext } from 'App';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { langToggle } from './langSlice';
+import { currentLanguage, langToggle } from './langSlice';
 import { isUserLoggedIn, removeToken } from 'components/signForms/authSlice';
 
 export default function Header() {
-  const language = useAppSelector((state) => state.lang.current);
+  const language = useAppSelector(currentLanguage);
   const user = useAppSelector(isUserLoggedIn);
   const dispatch = useAppDispatch();
   const theme = useTheme();

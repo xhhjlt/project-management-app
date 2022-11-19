@@ -13,9 +13,10 @@ import { useNavigate } from 'react-router-dom';
 import { useSignInMutation } from 'services/api/auth';
 import { setToken } from './authSlice';
 import { SignInResp } from 'types/api/auth';
+import { currentLanguage } from 'components/header/langSlice';
 
 export default function SignInForm() {
-  const language = useAppSelector((state) => state.lang.current);
+  const language = useAppSelector(currentLanguage);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [signIn] = useSignInMutation();
