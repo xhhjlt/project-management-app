@@ -1,4 +1,4 @@
-import { SignInArg, SignInResp, signUpArg, User } from 'types/api/auth';
+import { SignInArg, SignInResp, signUpArg, User } from 'types/api/user';
 import API from '.';
 
 export const authApi = API.injectEndpoints({

@@ -16,3 +16,7 @@ export interface signUpArg extends SignInArg {
 export interface SignInResp {
   token: string;
 }
+
+export interface UsersArg {
+  id: number;
+}

@@ -1,12 +1,29 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { API_URI } from './common';
+import { User, UsersArg } from 'types/api/user';
+import API from '.';
 
-export const usersApi = createApi({
-  reducerPath: 'usersApi',
-  baseQuery: fetchBaseQuery({ baseUrl: API_URI }),
+export const authApi = API.injectEndpoints({
   endpoints: (builder) => ({
-    getPokemonByName: builder.query<Record<string, string>, string>({
-      query: (name) => `pokemon/${name}`,
+    allUsers: builder.query<Array<User>, unknown>({
+      query: () => ({
+        url: `users`,
+      }),
+    }),
+    userById: builder.query<User, UsersArg>({
+      query: ({ id }) => ({
+        url: `users/${id}`,
+      }),
+    }),
+    updateUser: builder.query<User, UsersArg>({
+      query: ({ id }) => ({
+        url: `users/${id}`,
+        method: 'PUT',
+      }),
+    }),
+    deleteUser: builder.query<User, UsersArg>({
+      query: ({ id }) => ({
+        url: `users/${id}`,
+        method: 'DELETE',
+      }),
     }),
   }),
 });

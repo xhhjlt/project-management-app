@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { useSignInMutation } from 'services/api/auth';
 import { setToken } from './authSlice';
-import { SignInResp } from 'types/api/auth';
+import { SignInResp } from 'types/api/user';
 import { currentLanguage } from 'components/header/langSlice';
 
 export default function SignInForm() {
