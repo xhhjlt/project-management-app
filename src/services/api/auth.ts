@@ -1,21 +1,23 @@
-import { signInArg, signInResp, signUpArg, signUpResp } from 'types/api/auth';
+import { SignInArg, SignInResp, signUpArg, User } from 'types/api/auth';
 import API from '.';
 
 export const authApi = API.injectEndpoints({
   endpoints: (builder) => ({
-    signIn: builder.query<signInResp, signInArg>({
+    signIn: builder.mutation<SignInResp, SignInArg>({
       query: (body) => ({
         url: `auth/signin`,
+        method: 'POST',
         body,
       }),
     }),
-    signUp: builder.query<signUpResp, signUpArg>({
+    signUp: builder.query<User, signUpArg>({
       query: (body) => ({
         url: `auth/signup`,
+        method: 'POST',
         body,
       }),
     }),
   }),
 });
 
-export const { useSignInQuery, useSignUpQuery } = authApi;
+export const { useSignInMutation, useSignUpQuery } = authApi;

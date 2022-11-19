@@ -1,4 +1,4 @@
-import { AppBar, Button, IconButton, Toolbar, Typography, useTheme } from '@mui/material';
+import { AppBar, Button, IconButton, Toolbar, Typography, useTheme, Box } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import React, { useEffect, useState } from 'react';
@@ -6,11 +6,11 @@ import { ColorModeContext } from 'App';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { langToggle } from './langSlice';
-import { logOut } from './authSlice';
+import { isUserLoggedIn, removeToken } from 'components/signForms/authSlice';
 
 export default function Header() {
   const language = useAppSelector((state) => state.lang.current);
-  const user = useAppSelector((state) => state.auth.user);
+  const user = useAppSelector(isUserLoggedIn);
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const navigate = useNavigate();
@@ -36,15 +36,22 @@ export default function Header() {
       )}
     >
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          PMA
-        </Typography>
+        <Box mr="auto">
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ cursor: 'pointer' }}
+            onClick={() => navigate('/')}
+          >
+            PMA
+          </Typography>
+        </Box>
         {user ? (
           <>
             <Button size="large" color="inherit" onClick={() => navigate('/edit')}>
               {language === 'EN' ? 'Edit profile' : 'Редактировать профиль'}
             </Button>
-            <Button size="large" color="inherit" onClick={() => dispatch(logOut())}>
+            <Button size="large" color="inherit" onClick={() => dispatch(removeToken())}>
               {language === 'EN' ? 'Sign Out' : 'Выход'}
             </Button>
             <Button size="large" color="inherit" onClick={() => alert('модалочка')}>

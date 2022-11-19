@@ -1,6 +1,6 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import langReducer from '../components/header/langSlice';
-import authReducer from '../components/header/authSlice';
+import authReducer from '../components/signForms/authSlice';
 import API from 'services/api';
 
 export const store = configureStore({

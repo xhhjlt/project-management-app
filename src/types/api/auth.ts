@@ -1,18 +1,18 @@
-export interface signInArg {
+export interface User {
+  _id: 'string';
+  name: 'string';
+  login: 'string';
+}
+
+export interface SignInArg {
   login: string;
   password: string;
 }
 
-export interface signUpArg extends signInArg {
+export interface signUpArg extends SignInArg {
   name: string;
 }
 
-export interface signInResp {
+export interface SignInResp {
   token: string;
-}
-
-export interface signUpResp {
-  _id: 'string';
-  name: 'string';
-  login: 'string';
 }

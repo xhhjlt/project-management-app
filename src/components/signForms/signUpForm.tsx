@@ -9,19 +9,16 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useAppSelector } from 'app/hooks';
 import { useNavigate } from 'react-router-dom';
-import { logIn } from 'components/header/authSlice';
 
 export default function SignUpForm() {
-  const dispatch = useAppDispatch();
   const language = useAppSelector((state) => state.lang.current);
   const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    dispatch(logIn());
     console.log({
       email: data.get('email'),
       password: data.get('password'),
