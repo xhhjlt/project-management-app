@@ -9,21 +9,21 @@ export const boardsApi = API.injectEndpoints({
       }),
     }),
     boardById: builder.query<Board, string>({
-      query: (boardID) => ({
-        url: `boards/${boardID}`,
+      query: (boardId) => ({
+        url: `boards/${boardId}`,
       }),
     }),
     boardsSet: builder.query<Array<Board>, Array<string>>({
-      query: (boardIDs) => ({
+      query: (boardIds) => ({
         url: `boardsSet`,
         params: {
-          ids: boardIDs,
+          ids: boardIds,
         },
       }),
     }),
     boardsSetByUserId: builder.query<Array<Board>, string>({
-      query: (userID) => ({
-        url: `boardsSet/${userID}`,
+      query: (userId) => ({
+        url: `boardsSet/${userId}`,
       }),
     }),
     createBoard: builder.mutation<Board, Omit<Board, '_id'>>({
@@ -41,8 +41,8 @@ export const boardsApi = API.injectEndpoints({
       }),
     }),
     deleteBoard: builder.mutation<Board, string>({
-      query: (boardID) => ({
-        url: `boards/${boardID}`,
+      query: (boardId) => ({
+        url: `boards/${boardId}`,
         method: 'DELETE',
       }),
     }),

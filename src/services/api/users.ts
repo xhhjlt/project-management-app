@@ -9,8 +9,8 @@ export const usersApi = API.injectEndpoints({
       }),
     }),
     userById: builder.query<User, string>({
-      query: (userID) => ({
-        url: `users/${userID}`,
+      query: (userId) => ({
+        url: `users/${userId}`,
       }),
     }),
     updateUser: builder.mutation<User, User & SignUpArg>({
@@ -21,8 +21,8 @@ export const usersApi = API.injectEndpoints({
       }),
     }),
     deleteUser: builder.mutation<User, string>({
-      query: (userID) => ({
-        url: `users/${userID}`,
+      query: (userId) => ({
+        url: `users/${userId}`,
         method: 'DELETE',
       }),
     }),
