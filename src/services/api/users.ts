@@ -1,4 +1,4 @@
-import { User, UsersArg } from 'types/api/user';
+import { SignUpArg, User } from 'types/api/user';
 import API from '.';
 
 export const usersApi = API.injectEndpoints({
@@ -8,25 +8,26 @@ export const usersApi = API.injectEndpoints({
         url: `users`,
       }),
     }),
-    userById: builder.query<User, UsersArg>({
-      query: ({ id }) => ({
-        url: `users/${id}`,
+    userById: builder.query<User, string>({
+      query: (userID) => ({
+        url: `users/${userID}`,
       }),
     }),
-    updateUser: builder.query<User, UsersArg>({
-      query: ({ id }) => ({
-        url: `users/${id}`,
+    updateUser: builder.mutation<User, User & SignUpArg>({
+      query: ({ _id, ...body }) => ({
+        url: `users/${_id}`,
         method: 'PUT',
+        body,
       }),
     }),
-    deleteUser: builder.query<User, UsersArg>({
-      query: ({ id }) => ({
-        url: `users/${id}`,
+    deleteUser: builder.mutation<User, string>({
+      query: (userID) => ({
+        url: `users/${userID}`,
         method: 'DELETE',
       }),
     }),
   }),
 });
 
-export const { useAllUsersQuery, useUserByIdQuery, useUpdateUserQuery, useDeleteUserQuery } =
+export const { useAllUsersQuery, useUserByIdQuery, useUpdateUserMutation, useDeleteUserMutation } =
   usersApi;

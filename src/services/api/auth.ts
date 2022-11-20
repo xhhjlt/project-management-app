@@ -1,4 +1,4 @@
-import { SignInArg, SignInResp, signUpArg, User } from 'types/api/user';
+import { SignInArg, SignInResp, SignUpArg, User } from 'types/api/user';
 import API from '.';
 
 export const authApi = API.injectEndpoints({
@@ -10,7 +10,7 @@ export const authApi = API.injectEndpoints({
         body,
       }),
     }),
-    signUp: builder.query<User, signUpArg>({
+    signUp: builder.mutation<User, SignUpArg>({
       query: (body) => ({
         url: `auth/signup`,
         method: 'POST',
@@ -20,4 +20,4 @@ export const authApi = API.injectEndpoints({
   }),
 });
 
-export const { useSignInMutation, useSignUpQuery } = authApi;
+export const { useSignInMutation, useSignUpMutation } = authApi;

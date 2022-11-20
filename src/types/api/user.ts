@@ -1,7 +1,7 @@
 export interface User {
-  _id: 'string';
-  name: 'string';
-  login: 'string';
+  _id: string;
+  name: string;
+  login: string;
 }
 
 export interface SignInArg {
@@ -9,14 +9,10 @@ export interface SignInArg {
   password: string;
 }
 
-export interface signUpArg extends SignInArg {
+export interface SignUpArg extends SignInArg {
   name: string;
 }
 
 export interface SignInResp {
   token: string;
-}
-
-export interface UsersArg {
-  id: number;
 }
