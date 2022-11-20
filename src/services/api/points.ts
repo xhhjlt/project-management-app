@@ -17,10 +17,10 @@ export const pointsApi = API.injectEndpoints({
       }),
     }),
     pointsSet: builder.query<Array<Point>, Array<string>>({
-      query: (pointIds) => ({
+      query: (pointsIds) => ({
         url: `points`,
         params: {
-          ids: pointIds,
+          ids: pointsIds,
         },
       }),
     }),
