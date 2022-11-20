@@ -4,8 +4,3 @@ export interface Column {
   order: number;
   boardId: string;
 }
-
-export interface ColumnId {
-  boardID: string;
-  columnID: string;
-}

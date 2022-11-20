@@ -3,7 +3,7 @@ import API from '.';
 
 export const columnsApi = API.injectEndpoints({
   endpoints: (builder) => ({
-    allColumns: builder.query<Array<Column>, string>({
+    allColumnsInBoard: builder.query<Array<Column>, string>({
       query: (boardId) => ({
         url: `boards/${boardId}/columns`,
       }),
@@ -29,14 +29,14 @@ export const columnsApi = API.injectEndpoints({
         },
       }),
     }),
-    columnsSetUpdateOrder: builder.query<Array<Column>, Array<Pick<Column, '_id' | 'order'>>>({
+    columnsSetUpdateOrder: builder.mutation<Array<Column>, Array<Pick<Column, '_id' | 'order'>>>({
       query: (body) => ({
         url: `columnsSet`,
         method: 'PATCH',
         body,
       }),
     }),
-    columnsSetCreate: builder.query<Array<Column>, Array<Omit<Column, '_id'>>>({
+    columnsSetCreate: builder.mutation<Array<Column>, Array<Omit<Column, '_id'>>>({
       query: (body) => ({
         url: `columnsSet`,
         method: 'POST',
@@ -67,13 +67,13 @@ export const columnsApi = API.injectEndpoints({
 });
 
 export const {
-  useAllColumnsQuery,
+  useAllColumnsInBoardQuery,
   useColumnByIdQuery,
   useCreateColumnMutation,
   useDeleteColumnMutation,
   useUpdateColumnMutation,
   useColumnsSetByUserIdQuery,
-  useColumnsSetCreateQuery,
+  useColumnsSetCreateMutation,
   useColumnsSetQuery,
-  useColumnsSetUpdateOrderQuery,
+  useColumnsSetUpdateOrderMutation,
 } = columnsApi;
