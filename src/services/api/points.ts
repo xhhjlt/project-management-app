@@ -7,6 +7,7 @@ export const pointsApi = API.injectEndpoints({
       query: (taskId) => ({
         url: `points/${taskId}`,
       }),
+      providesTags: ['point'],
     }),
     pointsByUserId: builder.query<Array<Point>, string>({
       query: (userId) => ({
@@ -15,6 +16,7 @@ export const pointsApi = API.injectEndpoints({
           userId,
         },
       }),
+      providesTags: ['point'],
     }),
     pointsSet: builder.query<Array<Point>, Array<string>>({
       query: (pointsIds) => ({
@@ -23,6 +25,7 @@ export const pointsApi = API.injectEndpoints({
           ids: pointsIds,
         },
       }),
+      providesTags: ['point'],
     }),
     pointsSetUpdate: builder.mutation<Array<Point>, Array<Pick<Point, '_id' | 'done'>>>({
       query: (body) => ({
@@ -30,6 +33,7 @@ export const pointsApi = API.injectEndpoints({
         method: 'PATCH',
         body,
       }),
+      invalidatesTags: ['point'],
     }),
     createPoint: builder.mutation<Point, Omit<Point, '_id'>>({
       query: (body) => ({
@@ -37,6 +41,7 @@ export const pointsApi = API.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['point'],
     }),
     updatePoint: builder.mutation<Point, Omit<Point, 'taskId' | 'boardId'>>({
       query: ({ _id, ...body }) => ({
@@ -44,12 +49,14 @@ export const pointsApi = API.injectEndpoints({
         method: 'PATCH',
         body,
       }),
+      invalidatesTags: ['point'],
     }),
     deletePoint: builder.mutation<Point, string>({
       query: (pointId) => ({
         url: `points/${pointId}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['point'],
     }),
   }),
 });

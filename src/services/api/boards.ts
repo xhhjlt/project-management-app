@@ -7,11 +7,13 @@ export const boardsApi = API.injectEndpoints({
       query: () => ({
         url: `boards`,
       }),
+      providesTags: ['board'],
     }),
     boardById: builder.query<Board, string>({
       query: (boardId) => ({
         url: `boards/${boardId}`,
       }),
+      providesTags: ['board'],
     }),
     boardsSet: builder.query<Array<Board>, Array<string>>({
       query: (boardIds) => ({
@@ -20,11 +22,13 @@ export const boardsApi = API.injectEndpoints({
           ids: boardIds,
         },
       }),
+      providesTags: ['board'],
     }),
     boardsSetByUserId: builder.query<Array<Board>, string>({
       query: (userId) => ({
         url: `boardsSet/${userId}`,
       }),
+      providesTags: ['board'],
     }),
     createBoard: builder.mutation<Board, Omit<Board, '_id'>>({
       query: (body) => ({
@@ -32,6 +36,7 @@ export const boardsApi = API.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['board'],
     }),
     updateBoard: builder.mutation<Board, Board>({
       query: ({ _id, ...body }) => ({
@@ -39,12 +44,14 @@ export const boardsApi = API.injectEndpoints({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['board'],
     }),
     deleteBoard: builder.mutation<Board, string>({
       query: (boardId) => ({
         url: `boards/${boardId}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['board'],
     }),
   }),
 });

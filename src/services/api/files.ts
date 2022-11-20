@@ -7,6 +7,7 @@ export const filesApi = API.injectEndpoints({
       query: (boardId) => ({
         url: `file/${boardId}`,
       }),
+      providesTags: ['file'],
     }),
     filesByUserId: builder.query<Array<FileInfo>, string>({
       query: (userId) => ({
@@ -15,6 +16,7 @@ export const filesApi = API.injectEndpoints({
           userId,
         },
       }),
+      providesTags: ['file'],
     }),
     filesByTaskId: builder.query<Array<FileInfo>, string>({
       query: (taskId) => ({
@@ -23,6 +25,7 @@ export const filesApi = API.injectEndpoints({
           taskId,
         },
       }),
+      providesTags: ['file'],
     }),
     filesSet: builder.query<Array<FileInfo>, Array<string>>({
       query: (filesIds) => ({
@@ -31,6 +34,7 @@ export const filesApi = API.injectEndpoints({
           ids: filesIds,
         },
       }),
+      providesTags: ['file'],
     }),
     uploadFile: builder.mutation<FileInfo, FormData>({
       query: (body) => ({
@@ -38,14 +42,23 @@ export const filesApi = API.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['file'],
     }),
     deleteFile: builder.mutation<FileInfo, string>({
       query: (fileId) => ({
         url: `file/${fileId}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['file'],
     }),
   }),
 });
 
-export const {} = filesApi;
+export const {
+  useFilesByBoardIdQuery,
+  useFilesByTaskIdQuery,
+  useFilesByUserIdQuery,
+  useFilesSetQuery,
+  useDeleteFileMutation,
+  useUploadFileMutation,
+} = filesApi;

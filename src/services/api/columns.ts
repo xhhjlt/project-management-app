@@ -7,11 +7,13 @@ export const columnsApi = API.injectEndpoints({
       query: (boardId) => ({
         url: `boards/${boardId}/columns`,
       }),
+      providesTags: ['column'],
     }),
     columnById: builder.query<Column, Pick<Column, '_id' | 'boardId'>>({
       query: ({ _id, boardId }) => ({
         url: `boards/${boardId}/columns/${_id}`,
       }),
+      providesTags: ['column'],
     }),
     columnsSet: builder.query<Array<Column>, Array<string>>({
       query: (columnIds) => ({
@@ -20,6 +22,7 @@ export const columnsApi = API.injectEndpoints({
           ids: columnIds,
         },
       }),
+      providesTags: ['column'],
     }),
     columnsSetByUserId: builder.query<Array<Column>, string>({
       query: (userId) => ({
@@ -28,6 +31,7 @@ export const columnsApi = API.injectEndpoints({
           userId,
         },
       }),
+      providesTags: ['column'],
     }),
     columnsSetUpdateOrder: builder.mutation<Array<Column>, Array<Pick<Column, '_id' | 'order'>>>({
       query: (body) => ({
@@ -35,6 +39,7 @@ export const columnsApi = API.injectEndpoints({
         method: 'PATCH',
         body,
       }),
+      invalidatesTags: ['column'],
     }),
     columnsSetCreate: builder.mutation<Array<Column>, Array<Omit<Column, '_id'>>>({
       query: (body) => ({
@@ -42,6 +47,7 @@ export const columnsApi = API.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['column'],
     }),
     createColumn: builder.mutation<Column, Omit<Column, '_id'>>({
       query: ({ boardId, ...body }) => ({
@@ -49,6 +55,7 @@ export const columnsApi = API.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['column'],
     }),
     updateColumn: builder.mutation<Column, Column>({
       query: ({ _id, boardId, ...body }) => ({
@@ -56,12 +63,14 @@ export const columnsApi = API.injectEndpoints({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['column'],
     }),
     deleteColumn: builder.mutation<Column, Pick<Column, '_id' | 'boardId'>>({
       query: ({ _id, boardId }) => ({
         url: `boards/${boardId}/columns/${_id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['column'],
     }),
   }),
 });

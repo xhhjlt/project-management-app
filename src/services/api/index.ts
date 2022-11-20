@@ -14,7 +14,7 @@ const API = createApi({
       return headers;
     },
   }),
-  tagTypes: [],
+  tagTypes: ['user', 'board', 'column', 'task', 'point', 'file'],
   endpoints: () => ({}),
 });
 

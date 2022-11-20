@@ -7,11 +7,13 @@ export const tasksApi = API.injectEndpoints({
       query: ({ boardId, columnId }) => ({
         url: `boards/${boardId}/columns/${columnId}/tasks`,
       }),
+      providesTags: ['task'],
     }),
     taskById: builder.query<Task, Pick<Task, '_id' | 'boardId' | 'columnId'>>({
       query: ({ _id, boardId, columnId }) => ({
         url: `boards/${boardId}/columns/${columnId}/tasks/${_id}`,
       }),
+      providesTags: ['task'],
     }),
     tasksSet: builder.query<Array<Task>, Array<string>>({
       query: (taskIds) => ({
@@ -20,6 +22,7 @@ export const tasksApi = API.injectEndpoints({
           ids: taskIds,
         },
       }),
+      providesTags: ['task'],
     }),
     tasksSetSearch: builder.query<Array<Task>, string>({
       query: (search) => ({
@@ -28,6 +31,7 @@ export const tasksApi = API.injectEndpoints({
           search,
         },
       }),
+      providesTags: ['task'],
     }),
     tasksSetByUserId: builder.query<Array<Task>, string>({
       query: (userId) => ({
@@ -36,11 +40,13 @@ export const tasksApi = API.injectEndpoints({
           userId,
         },
       }),
+      providesTags: ['task'],
     }),
     tasksSetByBoardId: builder.query<Array<Task>, string>({
       query: (boardId) => ({
         url: `tasksSet/${boardId}`,
       }),
+      providesTags: ['task'],
     }),
     tasksSetUpdateOrder: builder.mutation<
       Array<Task>,
@@ -51,6 +57,7 @@ export const tasksApi = API.injectEndpoints({
         method: 'PATCH',
         body,
       }),
+      invalidatesTags: ['task'],
     }),
     createTask: builder.mutation<Task, Omit<Task, '_id'>>({
       query: ({ boardId, columnId, ...body }) => ({
@@ -58,6 +65,7 @@ export const tasksApi = API.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['task'],
     }),
     updateTask: builder.mutation<Task, Task>({
       query: ({ _id, boardId, columnId, ...body }) => ({
@@ -65,12 +73,14 @@ export const tasksApi = API.injectEndpoints({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['task'],
     }),
     deleteTask: builder.mutation<Task, Pick<Task, '_id' | 'boardId' | 'columnId'>>({
       query: ({ _id, boardId, columnId }) => ({
         url: `boards/${boardId}/columns/${columnId}/tasks/${_id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['task'],
     }),
   }),
 });
