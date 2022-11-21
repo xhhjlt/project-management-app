@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { currentLanguage, langToggle } from './langSlice';
 import { isUserLoggedIn, removeToken } from 'components/signForms/authSlice';
+import { AppRoutes } from 'types/routes';
 
 export default function Header() {
   const language = useAppSelector(currentLanguage);
@@ -41,14 +42,14 @@ export default function Header() {
             variant="h6"
             component="div"
             sx={{ cursor: 'pointer' }}
-            onClick={() => navigate('/')}
+            onClick={() => navigate(AppRoutes.Welcome)}
           >
             PMA
           </Typography>
         </Box>
         {user ? (
           <>
-            <Button size="large" color="inherit" onClick={() => navigate('/edit')}>
+            <Button size="large" color="inherit" onClick={() => navigate(AppRoutes.EditProfile)}>
               {language === 'EN' ? 'Edit profile' : 'Редактировать профиль'}
             </Button>
             <Button size="large" color="inherit" onClick={() => dispatch(removeToken())}>
@@ -60,10 +61,10 @@ export default function Header() {
           </>
         ) : (
           <>
-            <Button size="large" color="inherit" onClick={() => navigate('/signIn')}>
+            <Button size="large" color="inherit" onClick={() => navigate(AppRoutes.SignIn)}>
               {language === 'EN' ? 'Sign In' : 'Войти'}
             </Button>
-            <Button size="large" color="inherit" onClick={() => navigate('/signUp')}>
+            <Button size="large" color="inherit" onClick={() => navigate(AppRoutes.SignUp)}>
               {language === 'EN' ? 'Sign Up' : 'Регистрация'}
             </Button>
           </>

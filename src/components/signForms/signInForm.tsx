@@ -14,6 +14,7 @@ import { useSignInMutation } from 'services/api/auth';
 import { setToken } from './authSlice';
 import { SignInResp } from 'types/api/user';
 import { currentLanguage } from 'components/header/langSlice';
+import { AppRoutes } from 'types/routes';
 
 export default function SignInForm() {
   const language = useAppSelector(currentLanguage);
@@ -83,10 +84,10 @@ export default function SignInForm() {
             <Grid item xs></Grid>
             <Grid item>
               <Link
-                href="/signUp"
+                href={AppRoutes.SignUp}
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/signUp');
+                  navigate(AppRoutes.SignUp);
                 }}
                 variant="body2"
               >

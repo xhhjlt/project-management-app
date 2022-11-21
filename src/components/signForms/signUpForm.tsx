@@ -12,6 +12,7 @@ import Container from '@mui/material/Container';
 import { useAppSelector } from 'app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { currentLanguage } from 'components/header/langSlice';
+import { AppRoutes } from 'types/routes';
 
 export default function SignUpForm() {
   const language = useAppSelector(currentLanguage);
@@ -96,10 +97,10 @@ export default function SignUpForm() {
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link
-                href="/signIn"
+                href={AppRoutes.SignIn}
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/signIn');
+                  navigate(AppRoutes.SignIn);
                 }}
                 variant="body2"
               >

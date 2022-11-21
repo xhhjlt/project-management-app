@@ -10,12 +10,13 @@ import Root from 'routes/root';
 import SignIn from 'routes/signIn';
 import Welcome from 'routes/welcome';
 import SignUp from 'routes/signUp';
+import { AppRoutes } from 'types/routes';
 
 export const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: AppRoutes.Welcome,
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
@@ -24,23 +25,23 @@ const router = createBrowserRouter([
         element: <Welcome />,
       },
       {
-        path: 'signIn',
+        path: AppRoutes.SignIn,
         element: <SignIn />,
       },
       {
-        path: 'signUp',
+        path: AppRoutes.SignUp,
         element: <SignUp />,
       },
       {
-        path: 'edit',
+        path: AppRoutes.EditProfile,
         element: <EditProfile />,
       },
       {
-        path: 'main',
+        path: AppRoutes.Main,
         element: <Main />,
       },
       {
-        path: 'board',
+        path: AppRoutes.Board,
         element: <Board />,
       },
     ],
