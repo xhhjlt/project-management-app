@@ -5,7 +5,9 @@ import { useAppSelector, useAppDispatch } from 'app/hooks';
 import { openColumnModal, selectBoardColumns } from './boardSlice';
 import { Column } from './Column';
 import { DeleteColumnModal } from './DeleteColumnModal';
-import { ItemModal } from './ItemModal';
+import { AddItemModal } from './AddItemModal';
+import { ItemDescriptionModal } from './ItemDescriptionModal';
+import { DeleteItemModal } from './DeleteItemModal';
 
 export const TasksGrid = () => {
   const boardColumns = useAppSelector(selectBoardColumns);
@@ -36,7 +38,9 @@ export const TasksGrid = () => {
       </Button>
       <ColumnModal />
       <DeleteColumnModal />
-      <ItemModal />
+      <AddItemModal />
+      <ItemDescriptionModal />
+      <DeleteItemModal />
     </Stack>
   );
 };

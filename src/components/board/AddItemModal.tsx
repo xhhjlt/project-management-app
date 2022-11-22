@@ -33,7 +33,7 @@ const style = {
   gap: 3,
 };
 
-export const ItemModal = () => {
+export const AddItemModal = () => {
   const {
     register,
     handleSubmit,
@@ -55,6 +55,8 @@ export const ItemModal = () => {
   const onSubmit: SubmitHandler<ItemType> = (data) => {
     const small_id = uuid().slice(0, 8);
     data.id = small_id;
+    data.priority = { value: '', icon: '' };
+    data.size = { value: '', icon: '' };
     dispatch(addNewItem(data));
   };
 

@@ -1,4 +1,4 @@
-import { Button, Divider, IconButton, Paper, Stack, Typography, Badge, Box } from '@mui/material';
+import { Button, Divider, IconButton, Paper, Stack, Typography, Badge } from '@mui/material';
 import { ColumnType, openDeleteColumnModal, openItemModal, selectBoardColumns } from './boardSlice';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
@@ -35,14 +35,19 @@ export const Column = ({ id, title }: ColumnType) => {
     <Paper sx={paperStyles}>
       <Stack direction="row" justifyContent={'space-between'} sx={{ p: 1, mb: 1 }}>
         <Stack direction="row" spacing={3}>
-          <Typography sx={titleStyles} contentEditable={true}>
+          <Typography
+            variant="h6"
+            sx={titleStyles}
+            contentEditable={true}
+            suppressContentEditableWarning={true}
+          >
             {title}
           </Typography>
           <Badge
             badgeContent={column?.items?.length}
             color="primary"
             sx={{
-              top: 12,
+              top: 16,
             }}
           ></Badge>
         </Stack>
@@ -61,11 +66,18 @@ export const Column = ({ id, title }: ColumnType) => {
         </IconButton>
       </Stack>
       <Divider variant="middle" />
-      <Stack gap={1} mt={1} mb={1}>
+      <Stack gap={1} mt={1} mb={2}>
         {column!.items!.length > 0 &&
           column?.items?.map((item) => {
             return (
-              <Item key={item.id} id={item.id} title={item.title} description={item.description} />
+              <Item
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                description={item.description}
+                priority={item.priority}
+                size={item.size}
+              />
             );
           })}
       </Stack>
@@ -78,6 +90,7 @@ export const Column = ({ id, title }: ColumnType) => {
           m: '0 auto',
           width: '80%',
           mt: 'auto',
+          mb: -0.5,
         }}
         onClick={() => {
           dispatch(openItemModal({ id }));
