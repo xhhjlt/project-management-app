@@ -3,7 +3,7 @@ import API from '.';
 
 export const boardsApi = API.injectEndpoints({
   endpoints: (builder) => ({
-    allBoards: builder.query<Array<Board>, unknown>({
+    allBoards: builder.query<Array<Board>, undefined>({
       query: () => ({
         url: `boards`,
       }),
