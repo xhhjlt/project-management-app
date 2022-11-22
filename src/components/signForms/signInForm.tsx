@@ -11,7 +11,7 @@ import Container from '@mui/material/Container';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { useSignInMutation } from 'services/api/auth';
-import { setToken } from './authSlice';
+import { setUser } from './authSlice';
 import { SignInResp } from 'types/api/user';
 import { currentLanguage } from 'components/header/langSlice';
 import { AppRoutes } from 'types/routes';
@@ -30,7 +30,7 @@ export default function SignInForm() {
     try {
       const result = (await signIn({ login, password })) as { data: SignInResp };
       if (result.data) {
-        dispatch(setToken(result.data));
+        dispatch(setUser(result.data));
       }
     } catch (err) {
       console.log(err);

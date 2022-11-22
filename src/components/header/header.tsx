@@ -6,7 +6,7 @@ import { ColorModeContext } from 'App';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { currentLanguage, langToggle } from './langSlice';
-import { isUserLoggedIn, removeToken } from 'components/signForms/authSlice';
+import { isUserLoggedIn, clearUser } from 'components/signForms/authSlice';
 import { AppRoutes } from 'types/routes';
 
 export default function Header() {
@@ -52,7 +52,13 @@ export default function Header() {
             <Button size="large" color="inherit" onClick={() => navigate(AppRoutes.EditProfile)}>
               {language === 'EN' ? 'Edit profile' : 'Редактировать профиль'}
             </Button>
-            <Button size="large" color="inherit" onClick={() => dispatch(removeToken())}>
+            <Button
+              size="large"
+              color="inherit"
+              onClick={() => {
+                dispatch(clearUser());
+              }}
+            >
               {language === 'EN' ? 'Sign Out' : 'Выход'}
             </Button>
             <Button size="large" color="inherit" onClick={() => alert('модалочка')}>

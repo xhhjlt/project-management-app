@@ -9,6 +9,7 @@ export const authApi = API.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['user', 'board', 'column', 'task', 'point', 'file'],
     }),
     signUp: builder.mutation<User, SignUpArg>({
       query: (body) => ({
