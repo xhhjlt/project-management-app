@@ -3,7 +3,7 @@ import API from '.';
 
 export const usersApi = API.injectEndpoints({
   endpoints: (builder) => ({
-    allUsers: builder.query<Array<User>, undefined>({
+    allUsers: builder.query<Array<User>, void>({
       query: () => ({
         url: `users`,
       }),
