@@ -2,7 +2,7 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import langReducer from '../components/header/langSlice';
 import authReducer from '../components/signForms/authSlice';
 import API from 'services/api';
-import { clearTokenInStorage, invalidTokenErrorHandler, saveTokenInStorage } from 'app/middleware';
+import { authStorage, apiErrorHandler } from 'app/middleware';
 
 export const store = configureStore({
   reducer: {
@@ -11,12 +11,7 @@ export const store = configureStore({
     [API.reducerPath]: API.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
-      API.middleware,
-      invalidTokenErrorHandler,
-      saveTokenInStorage,
-      clearTokenInStorage
-    ),
+    getDefaultMiddleware().concat(API.middleware, apiErrorHandler, authStorage),
 });
 
 export type AppDispatch = typeof store.dispatch;

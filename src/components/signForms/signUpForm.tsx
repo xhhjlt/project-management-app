@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -9,22 +8,41 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { useAppSelector } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { currentLanguage } from 'components/header/langSlice';
 import { AppRoutes } from 'types/routes';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { useSignInMutation, useSignUpMutation } from 'services/api/auth';
+import { setUser } from './authSlice';
+
+interface SignUpFormData {
+  name: string;
+  login: string;
+  password: string;
+}
 
 export default function SignUpForm() {
   const language = useAppSelector(currentLanguage);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [signUp] = useSignUpMutation();
+  const [signIn] = useSignInMutation();
+  const { register, handleSubmit } = useForm<SignUpFormData>();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+  const onSubmit: SubmitHandler<SignUpFormData> = async (formData) => {
+    try {
+      const resp = await signUp(formData);
+      if ('data' in resp) {
+        const { login, password } = formData;
+        const result = await signIn({ login, password });
+        if ('data' in result) {
+          dispatch(setUser(result.data));
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -45,48 +63,31 @@ export default function SignUpForm() {
         <Typography component="h1" variant="h5">
           {language === 'EN' ? 'Sign Up' : 'Регистрация'}
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 autoComplete="given-name"
-                name="firstName"
-                required
                 fullWidth
-                id="firstName"
-                label={language === 'EN' ? 'First Name' : 'Имя'}
+                {...register('name', { required: true })}
+                label={language === 'EN' ? 'Name' : 'Имя'}
                 autoFocus
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                fullWidth
-                id="lastName"
-                label={language === 'EN' ? 'Last Name' : 'Фамилия'}
-                name="lastName"
-                autoComplete="family-name"
-              />
-            </Grid>
             <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
-                id="login"
+                {...register('login', { required: true })}
                 label={language === 'EN' ? 'Login' : 'Логин'}
                 type="text"
-                name="login"
-                autoComplete="username"
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
-                name="password"
+                {...register('password', { required: true })}
                 label={language === 'EN' ? 'Password' : 'Пароль'}
                 type="password"
-                id="password"
                 autoComplete="new-password"
               />
             </Grid>
