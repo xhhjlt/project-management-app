@@ -1,5 +1,5 @@
 import { ItemType, openItemDescriptionModal } from './boardSlice';
-import { Paper, Typography, Chip, Stack } from '@mui/material';
+import { Paper, Typography, Chip, Stack, Tooltip } from '@mui/material';
 import { useAppDispatch } from 'app/hooks';
 import * as Icons from 'react-icons/fc';
 
@@ -36,20 +36,24 @@ export const Item = ({ id, title, description, priority, size }: ItemType) => {
       </Typography>
       <Stack direction="row" spacing={1}>
         {priority.value && (
-          <Chip
-            label={priority.value}
-            size="small"
-            icon={getIconComponent(priority.icon)}
-            sx={{ backgroundColor: '#f5f5f5' }}
-          />
+          <Tooltip title="Priority" placement="top" followCursor arrow>
+            <Chip
+              label={priority.value}
+              size="small"
+              icon={getIconComponent(priority.icon)}
+              sx={{ backgroundColor: '#f5f5f5' }}
+            />
+          </Tooltip>
         )}
         {size.value && (
-          <Chip
-            label={size.value}
-            size="small"
-            icon={getIconComponent(size.icon)}
-            sx={{ backgroundColor: '#f5f5f5' }}
-          />
+          <Tooltip title="Size" placement="top" followCursor arrow>
+            <Chip
+              label={size.value}
+              size="small"
+              icon={getIconComponent(size.icon)}
+              sx={{ backgroundColor: '#f5f5f5' }}
+            />
+          </Tooltip>
         )}
       </Stack>
     </Paper>

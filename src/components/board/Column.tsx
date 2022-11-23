@@ -1,9 +1,16 @@
-import { Button, Divider, IconButton, Paper, Stack, Typography, Badge } from '@mui/material';
-import { ColumnType, openDeleteColumnModal, openItemModal, selectBoardColumns } from './boardSlice';
+import { Button, Divider, IconButton, Paper, Stack, Badge } from '@mui/material';
+import {
+  ColumnType,
+  openDeleteColumnModal,
+  openItemModal,
+  selectBoardColumns,
+  setColumnTitle,
+} from './boardSlice';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Item } from './Item';
+import { ColumnTitle } from './ColumnTitle';
 
 const paperStyles = {
   boxSizing: 'border-box',
@@ -12,18 +19,6 @@ const paperStyles = {
   backgroundColor: '#f9fbe7', // '#f0f4c3',
   display: 'flex',
   flexDirection: 'column',
-};
-
-const titleStyles = {
-  fontWeight: 600,
-  color: '#212121',
-  cursor: 'pointer',
-  '&:focus': {
-    outline: `2px solid #bdbdbd`,
-    backgroundColor: '#fff',
-    borderRadius: '4px',
-    p: '0 0.5rem',
-  },
 };
 
 export const Column = ({ id, title }: ColumnType) => {
@@ -35,14 +30,10 @@ export const Column = ({ id, title }: ColumnType) => {
     <Paper sx={paperStyles}>
       <Stack direction="row" justifyContent={'space-between'} sx={{ p: 1, mb: 1 }}>
         <Stack direction="row" spacing={3}>
-          <Typography
-            variant="h6"
-            sx={titleStyles}
-            contentEditable={true}
-            suppressContentEditableWarning={true}
-          >
-            {title}
-          </Typography>
+          <ColumnTitle
+            value={title}
+            onChange={(newTitle) => dispatch(setColumnTitle({ id, title: newTitle }))}
+          />
           <Badge
             badgeContent={column?.items?.length}
             color="primary"
@@ -51,19 +42,21 @@ export const Column = ({ id, title }: ColumnType) => {
             }}
           ></Badge>
         </Stack>
-        <IconButton
-          sx={{ p: 0 }}
-          onClick={() => {
-            dispatch(openDeleteColumnModal({ id }));
-          }}
-        >
-          <ClearOutlinedIcon
-            sx={{
-              color: '#616161',
-              width: 20,
+        <Stack>
+          <IconButton
+            sx={{ p: 0, ml: 2, pt: '4px' }}
+            onClick={() => {
+              dispatch(openDeleteColumnModal({ id }));
             }}
-          />
-        </IconButton>
+          >
+            <ClearOutlinedIcon
+              sx={{
+                color: '#616161',
+                width: 20,
+              }}
+            />
+          </IconButton>
+        </Stack>
       </Stack>
       <Divider variant="middle" />
       <Stack gap={1} mt={1} mb={2}>

@@ -140,6 +140,10 @@ export const boardSlice = createSlice({
         item.size.icon = action.payload.size.icon;
       }
     },
+    setColumnTitle: (state, action: PayloadAction<ColumnType>) => {
+      const column = state.boardColumns.find((el) => el.id === action.payload.id);
+      column!.title = action.payload.title;
+    },
     // setItemPriority: (state, action: PayloadAction<ChipType>) => {
     //   const itemId = state.itemDescriptionModalOpen.itemId;
     //   const item = state.boardColumns
@@ -213,6 +217,7 @@ export const {
   openDeleteItemModal,
   closeDeleteItemModal,
   deleteBoardItem,
+  setColumnTitle,
 } = boardSlice.actions;
 
 export const selectColumnModalOpen = (state: RootState) => state.board.columnModalOpen;
