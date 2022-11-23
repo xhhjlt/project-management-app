@@ -2,15 +2,8 @@ import { Stack, Typography } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import StarIcon from '@mui/icons-material/Star';
-import { ChangeEvent, useState } from 'react';
 
 export const TitleGroup = () => {
-  const [value, setValue] = useState('Board Title');
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
-
   return (
     <Stack direction="row" alignItems={'center'}>
       <Typography
@@ -26,9 +19,9 @@ export const TitleGroup = () => {
         }}
         suppressContentEditableWarning={true}
         contentEditable={true}
-        onChange={handleChange}
+        onInput={(e) => console.log('e: ', e.currentTarget.textContent)}
       >
-        {value}
+        Board Title
       </Typography>
       <div>
         <Checkbox
