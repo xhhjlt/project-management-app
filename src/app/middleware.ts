@@ -1,6 +1,6 @@
 import { isRejectedWithValue } from '@reduxjs/toolkit';
 import type { MiddlewareAPI, Middleware } from '@reduxjs/toolkit';
-import { clearUser } from 'components/signForms/authSlice';
+import { clearUser, setUser } from 'components/signForms/authSlice';
 
 export const invalidTokenErrorHandler: Middleware = (api: MiddlewareAPI) => (next) => (action) => {
   if (isRejectedWithValue(action)) {
@@ -8,5 +8,22 @@ export const invalidTokenErrorHandler: Middleware = (api: MiddlewareAPI) => (nex
       api.dispatch(clearUser());
     }
   }
+  return next(action);
+};
+
+export const saveTokenInStorage: Middleware = () => (next) => (action) => {
+  if (action.type === setUser.type) {
+    const token = action.payload.token;
+    localStorage.setItem('token', token);
+  }
+
+  return next(action);
+};
+
+export const clearTokenInStorage: Middleware = () => (next) => (action) => {
+  if (action.type === clearUser.type) {
+    localStorage.removeItem('token');
+  }
+
   return next(action);
 };
