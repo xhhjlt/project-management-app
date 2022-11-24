@@ -4,6 +4,7 @@ import { clearUser, setUser } from 'components/signForms/authSlice';
 
 export const apiErrorHandler: Middleware = (api: MiddlewareAPI) => (next) => (action) => {
   if (isRejectedWithValue(action)) {
+    console.log(action.payload.data);
     switch (action.payload.status) {
       case 403:
         api.dispatch(clearUser());

@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
+import { Language } from 'types/language';
 
-const userLang = /^ru\b/.test(navigator.language) ? 'RU' : 'EN';
+const userLang: Language = /^ru\b/.test(navigator.language) ? 'RU' : 'EN';
 
 const langSlice = createSlice({
   name: 'lang',

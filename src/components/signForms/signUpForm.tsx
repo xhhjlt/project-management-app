@@ -15,6 +15,7 @@ import { AppRoutes } from 'types/routes';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useSignInMutation, useSignUpMutation } from 'services/api/auth';
 import { setUser } from './authSlice';
+import { loginRegisterOptions, nameRegisterOptions, passwordRegisterOptions } from './utils';
 
 interface SignUpFormData {
   name: string;
@@ -28,20 +29,20 @@ export default function SignUpForm() {
   const dispatch = useAppDispatch();
   const [signUp] = useSignUpMutation();
   const [signIn] = useSignInMutation();
-  const { register, handleSubmit } = useForm<SignUpFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>();
 
   const onSubmit: SubmitHandler<SignUpFormData> = async (formData) => {
-    try {
-      const resp = await signUp(formData);
-      if ('data' in resp) {
-        const { login, password } = formData;
-        const result = await signIn({ login, password });
-        if ('data' in result) {
-          dispatch(setUser(result.data));
-        }
+    const resp = await signUp(formData);
+    if ('data' in resp) {
+      const { login, password } = formData;
+      const result = await signIn({ login, password });
+      if ('data' in result) {
+        dispatch(setUser(result.data));
       }
-    } catch (err) {
-      console.log(err);
     }
   };
 
@@ -69,26 +70,32 @@ export default function SignUpForm() {
               <TextField
                 autoComplete="given-name"
                 fullWidth
-                {...register('name', { required: true })}
+                {...register('name', nameRegisterOptions(language))}
                 label={language === 'EN' ? 'Name' : 'Имя'}
                 autoFocus
+                error={!!errors.name}
+                helperText={errors.name?.message || ''}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                {...register('login', { required: true })}
+                {...register('login', loginRegisterOptions(language))}
                 label={language === 'EN' ? 'Login' : 'Логин'}
                 type="text"
+                error={!!errors.login}
+                helperText={errors.login?.message || ''}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                {...register('password', { required: true })}
+                {...register('password', passwordRegisterOptions(language))}
                 label={language === 'EN' ? 'Password' : 'Пароль'}
                 type="password"
                 autoComplete="new-password"
+                error={!!errors.password}
+                helperText={errors.password?.message || ''}
               />
             </Grid>
           </Grid>

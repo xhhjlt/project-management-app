@@ -26,16 +26,16 @@ export default function SignInForm() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [signIn] = useSignInMutation();
-  const { register, handleSubmit } = useForm<SignInFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormData>();
 
   const onSubmit: SubmitHandler<SignInFormData> = async (formData) => {
-    try {
-      const result = await signIn(formData);
-      if ('data' in result) {
-        dispatch(setUser(result.data));
-      }
-    } catch (err) {
-      console.log(err);
+    const result = await signIn(formData);
+    if ('data' in result) {
+      dispatch(setUser(result.data));
     }
   };
 
@@ -61,19 +61,27 @@ export default function SignInForm() {
           <TextField
             margin="normal"
             fullWidth
-            {...register('login', { required: true })}
+            {...register('login', {
+              required: language === 'EN' ? 'Enter login' : 'Введите логин',
+            })}
             label={language === 'EN' ? 'Login' : 'Логин'}
             type="text"
             autoComplete="username"
             autoFocus
+            error={!!errors.login}
+            helperText={errors.login?.message || ''}
           />
           <TextField
             margin="normal"
             fullWidth
-            {...register('password', { required: true })}
+            {...register('password', {
+              required: language === 'EN' ? 'Enter password' : 'Введите пароль',
+            })}
             label={language === 'EN' ? 'Password' : 'Пароль'}
             type="password"
             autoComplete="current-password"
+            error={!!errors.password}
+            helperText={errors.password?.message || ''}
           />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             {language === 'EN' ? 'Sign In' : 'Войти'}
