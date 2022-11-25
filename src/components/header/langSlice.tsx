@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { RootState } from 'app/store';
 
 const userLang = /^ru\b/.test(navigator.language) ? 'RU' : 'EN';
 
@@ -15,3 +16,4 @@ const langSlice = createSlice({
 
 export const { langToggle } = langSlice.actions;
 export default langSlice.reducer;
+export const currentLanguage = (state: RootState) => state.lang.current;

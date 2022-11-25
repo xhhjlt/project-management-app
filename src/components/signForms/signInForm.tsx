@@ -10,21 +10,30 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { useNavigate } from 'react-router-dom';
-import { logIn } from 'components/header/authSlice';
+import { useSignInMutation } from 'services/api/auth';
+import { setToken } from './authSlice';
+import { SignInResp } from 'types/api/user';
+import { currentLanguage } from 'components/header/langSlice';
 
 export default function SignInForm() {
+  const language = useAppSelector(currentLanguage);
   const dispatch = useAppDispatch();
-  const language = useAppSelector((state) => state.lang.current);
   const navigate = useNavigate();
+  const [signIn] = useSignInMutation();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    dispatch(logIn());
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const login = data.get('login')?.toString() || '';
+    const password = data.get('password')?.toString() || '';
+    try {
+      const result = (await signIn({ login, password })) as { data: SignInResp };
+      if (result.data) {
+        dispatch(setToken(result.data));
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
