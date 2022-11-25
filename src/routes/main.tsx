@@ -1,7 +1,5 @@
+import { RqtDemo } from 'components/rqtDemo/rqtDemo';
+
 export default function Main() {
-  return (
-    <>
-      <div>Main</div>
-    </>
-  );
+  return <RqtDemo />;
 }
