@@ -17,6 +17,18 @@ export type ItemType = {
   description?: string;
   priority: ChipType;
   size: ChipType;
+  index: number;
+};
+
+export type DeleteItemPayloadOnDrag = {
+  draggableId: string;
+  srcColumnId: string;
+};
+
+export type AddItemPayloadOnDrop = {
+  draggableItem: ItemType;
+  destColumnId: string;
+  destinationIndex: number;
 };
 
 export type ItemPayloadType = {
@@ -90,6 +102,9 @@ export const boardSlice = createSlice({
         (el) => el.id !== state.deleteColumnModalOpen.columnId
       );
     },
+    setBoardColumns: (state, action: PayloadAction<Array<ColumnType>>) => {
+      state.boardColumns = action.payload;
+    },
     openDeleteColumnModal: (state, action: PayloadAction<ColumnType>) => {
       state.deleteColumnModalOpen.isOpen = true;
       state.deleteColumnModalOpen.columnId = action.payload.id;
@@ -144,6 +159,15 @@ export const boardSlice = createSlice({
       const column = state.boardColumns.find((el) => el.id === action.payload.id);
       column!.title = action.payload.title;
     },
+    deleteItemOnDrag: (state, action: PayloadAction<DeleteItemPayloadOnDrag>) => {
+      const srcColumn = state.boardColumns.find((col) => col.id === action.payload.srcColumnId)!;
+      srcColumn.items = srcColumn.items!.filter((item) => item.id !== action.payload.draggableId);
+    },
+    addItemOnDrop: (state, action: PayloadAction<AddItemPayloadOnDrop>) => {
+      const destColumn = state.boardColumns.find((col) => col.id === action.payload.destColumnId)!;
+      destColumn.items!.splice(action.payload.destinationIndex, 0, action.payload.draggableItem);
+    },
+
     // setItemPriority: (state, action: PayloadAction<ChipType>) => {
     //   const itemId = state.itemDescriptionModalOpen.itemId;
     //   const item = state.boardColumns
@@ -218,6 +242,9 @@ export const {
   closeDeleteItemModal,
   deleteBoardItem,
   setColumnTitle,
+  setBoardColumns,
+  deleteItemOnDrag,
+  addItemOnDrop,
 } = boardSlice.actions;
 
 export const selectColumnModalOpen = (state: RootState) => state.board.columnModalOpen;

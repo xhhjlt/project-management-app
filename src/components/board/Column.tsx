@@ -11,6 +11,7 @@ import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Item } from './Item';
 import { ColumnTitle } from './ColumnTitle';
+import { Droppable } from 'react-beautiful-dnd';
 
 const paperStyles = {
   boxSizing: 'border-box',
@@ -59,21 +60,27 @@ export const Column = ({ id, title }: ColumnType) => {
         </Stack>
       </Stack>
       <Divider variant="middle" />
-      <Stack gap={1} mt={1} mb={2}>
-        {column!.items!.length > 0 &&
-          column?.items?.map((item) => {
-            return (
-              <Item
-                key={item.id}
-                id={item.id}
-                title={item.title}
-                description={item.description}
-                priority={item.priority}
-                size={item.size}
-              />
-            );
-          })}
-      </Stack>
+      <Droppable droppableId={id}>
+        {(provided) => (
+          <Stack gap={1} mt={1} mb={2} ref={provided.innerRef} {...provided.droppableProps}>
+            {column!.items!.length > 0 &&
+              column?.items?.map((item, index) => {
+                return (
+                  <Item
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    description={item.description}
+                    priority={item.priority}
+                    size={item.size}
+                    index={index}
+                  />
+                );
+              })}
+            {provided.placeholder}
+          </Stack>
+        )}
+      </Droppable>
       <Button
         variant="text"
         startIcon={<AddRoundedIcon />}
