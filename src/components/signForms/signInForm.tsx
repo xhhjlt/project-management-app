@@ -11,28 +11,31 @@ import Container from '@mui/material/Container';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { useSignInMutation } from 'services/api/auth';
-import { setToken } from './authSlice';
-import { SignInResp } from 'types/api/user';
+import { setUser } from './authSlice';
 import { currentLanguage } from 'components/header/langSlice';
+import { AppRoutes } from 'types/routes';
+import { useForm, SubmitHandler } from 'react-hook-form';
+
+interface SignInFormData {
+  login: string;
+  password: string;
+}
 
 export default function SignInForm() {
   const language = useAppSelector(currentLanguage);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [signIn] = useSignInMutation();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormData>();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const login = data.get('login')?.toString() || '';
-    const password = data.get('password')?.toString() || '';
-    try {
-      const result = (await signIn({ login, password })) as { data: SignInResp };
-      if (result.data) {
-        dispatch(setToken(result.data));
-      }
-    } catch (err) {
-      console.log(err);
+  const onSubmit: SubmitHandler<SignInFormData> = async (formData) => {
+    const result = await signIn(formData);
+    if ('data' in result) {
+      dispatch(setUser(result.data));
     }
   };
 
@@ -54,27 +57,31 @@ export default function SignInForm() {
         <Typography component="h1" variant="h5">
           {language === 'EN' ? 'Sign In' : 'Вход'}
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
-            required
             fullWidth
-            id="login"
+            {...register('login', {
+              required: language === 'EN' ? 'Enter login' : 'Введите логин',
+            })}
             label={language === 'EN' ? 'Login' : 'Логин'}
             type="text"
-            name="login"
             autoComplete="username"
             autoFocus
+            error={!!errors.login}
+            helperText={errors.login?.message || ''}
           />
           <TextField
             margin="normal"
-            required
             fullWidth
-            name="password"
+            {...register('password', {
+              required: language === 'EN' ? 'Enter password' : 'Введите пароль',
+            })}
             label={language === 'EN' ? 'Password' : 'Пароль'}
             type="password"
-            id="password"
             autoComplete="current-password"
+            error={!!errors.password}
+            helperText={errors.password?.message || ''}
           />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             {language === 'EN' ? 'Sign In' : 'Войти'}
@@ -83,10 +90,10 @@ export default function SignInForm() {
             <Grid item xs></Grid>
             <Grid item>
               <Link
-                href="/signUp"
+                href={AppRoutes.SignUp}
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/signUp');
+                  navigate(AppRoutes.SignUp);
                 }}
                 variant="body2"
               >
