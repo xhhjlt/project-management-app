@@ -11,7 +11,7 @@ import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Item } from './Item';
 import { ColumnTitle } from './ColumnTitle';
-import { Droppable } from 'react-beautiful-dnd';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
 
 const paperStyles = {
   boxSizing: 'border-box',
@@ -22,82 +22,91 @@ const paperStyles = {
   flexDirection: 'column',
 };
 
-export const Column = ({ id, title }: ColumnType) => {
+export const Column = ({ id, title, index }: ColumnType) => {
   const dispatch = useAppDispatch();
   const boardColumns = useAppSelector(selectBoardColumns);
   const column = boardColumns.find((el) => el.id === id);
 
   return (
-    <Paper sx={paperStyles}>
-      <Stack direction="row" justifyContent={'space-between'} sx={{ p: 1, mb: 1 }}>
-        <Stack direction="row" spacing={3}>
-          <ColumnTitle
-            value={title}
-            onChange={(newTitle) => dispatch(setColumnTitle({ id, title: newTitle }))}
-          />
-          <Badge
-            badgeContent={column?.items?.length}
-            color="primary"
+    <Draggable draggableId={id} index={index}>
+      {(provided) => (
+        <Paper sx={paperStyles} {...provided.draggableProps} ref={provided.innerRef}>
+          <Stack
+            direction="row"
+            justifyContent={'space-between'}
+            sx={{ p: 1, mb: 1 }}
+            {...provided.dragHandleProps}
+          >
+            <Stack direction="row" spacing={3}>
+              <ColumnTitle
+                value={title}
+                onChange={(newTitle) => dispatch(setColumnTitle({ id, title: newTitle, index }))}
+              />
+              <Badge
+                badgeContent={column?.items?.length}
+                color="primary"
+                sx={{
+                  top: 16,
+                }}
+              ></Badge>
+            </Stack>
+            <Stack>
+              <IconButton
+                sx={{ p: 0, ml: 2, pt: '4px' }}
+                onClick={() => {
+                  dispatch(openDeleteColumnModal({ id, index }));
+                }}
+              >
+                <ClearOutlinedIcon
+                  sx={{
+                    color: '#616161',
+                    width: 20,
+                  }}
+                />
+              </IconButton>
+            </Stack>
+          </Stack>
+          <Divider variant="middle" />
+          <Droppable droppableId={id} type="task">
+            {(provided) => (
+              <Stack gap={1} mt={1} mb={2} ref={provided.innerRef} {...provided.droppableProps}>
+                {column!.items!.length > 0 &&
+                  column?.items?.map((item, index) => {
+                    return (
+                      <Item
+                        key={item.id}
+                        id={item.id}
+                        title={item.title}
+                        description={item.description}
+                        priority={item.priority}
+                        size={item.size}
+                        index={index}
+                      />
+                    );
+                  })}
+                {provided.placeholder}
+              </Stack>
+            )}
+          </Droppable>
+          <Button
+            variant="text"
+            startIcon={<AddRoundedIcon />}
             sx={{
-              top: 16,
+              color: '#616161',
+              display: 'flex',
+              m: '0 auto',
+              width: '80%',
+              mt: 'auto',
+              mb: -0.5,
             }}
-          ></Badge>
-        </Stack>
-        <Stack>
-          <IconButton
-            sx={{ p: 0, ml: 2, pt: '4px' }}
             onClick={() => {
-              dispatch(openDeleteColumnModal({ id }));
+              dispatch(openItemModal({ id, index }));
             }}
           >
-            <ClearOutlinedIcon
-              sx={{
-                color: '#616161',
-                width: 20,
-              }}
-            />
-          </IconButton>
-        </Stack>
-      </Stack>
-      <Divider variant="middle" />
-      <Droppable droppableId={id}>
-        {(provided) => (
-          <Stack gap={1} mt={1} mb={2} ref={provided.innerRef} {...provided.droppableProps}>
-            {column!.items!.length > 0 &&
-              column?.items?.map((item, index) => {
-                return (
-                  <Item
-                    key={item.id}
-                    id={item.id}
-                    title={item.title}
-                    description={item.description}
-                    priority={item.priority}
-                    size={item.size}
-                    index={index}
-                  />
-                );
-              })}
-            {provided.placeholder}
-          </Stack>
-        )}
-      </Droppable>
-      <Button
-        variant="text"
-        startIcon={<AddRoundedIcon />}
-        sx={{
-          color: '#616161',
-          display: 'flex',
-          m: '0 auto',
-          width: '80%',
-          mt: 'auto',
-          mb: -0.5,
-        }}
-        onClick={() => {
-          dispatch(openItemModal({ id }));
-        }}
-      >
-        Add item
-      </Button>
-    </Paper>
+            Add item
+          </Button>
+        </Paper>
+      )}
+    </Draggable>
   );
 };

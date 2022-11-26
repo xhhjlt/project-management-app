@@ -31,6 +31,11 @@ export type AddItemPayloadOnDrop = {
   destinationIndex: number;
 };
 
+export type AddColumnPayloadOnDrop = {
+  draggableColumn: ColumnType;
+  destinationIndex: number;
+};
+
 export type ItemPayloadType = {
   title: string;
   description?: string;
@@ -42,6 +47,7 @@ export type ColumnType = {
   id: string;
   title?: string;
   items?: Array<ItemType>;
+  index: number;
 };
 
 export type ItemModalType = {
@@ -167,6 +173,12 @@ export const boardSlice = createSlice({
       const destColumn = state.boardColumns.find((col) => col.id === action.payload.destColumnId)!;
       destColumn.items!.splice(action.payload.destinationIndex, 0, action.payload.draggableItem);
     },
+    deleteColumnOnDrag: (state, action: PayloadAction<string>) => {
+      state.boardColumns = state.boardColumns.filter((el) => el.id !== action.payload);
+    },
+    addColumnOnDrop: (state, action: PayloadAction<AddColumnPayloadOnDrop>) => {
+      state.boardColumns.splice(action.payload.destinationIndex, 0, action.payload.draggableColumn);
+    },
 
     // setItemPriority: (state, action: PayloadAction<ChipType>) => {
     //   const itemId = state.itemDescriptionModalOpen.itemId;
@@ -245,6 +257,8 @@ export const {
   setBoardColumns,
   deleteItemOnDrag,
   addItemOnDrop,
+  deleteColumnOnDrag,
+  addColumnOnDrop,
 } = boardSlice.actions;
 
 export const selectColumnModalOpen = (state: RootState) => state.board.columnModalOpen;
