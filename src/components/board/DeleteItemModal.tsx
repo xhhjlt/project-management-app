@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 
 const style = {
+  boxSizing: 'content-box',
   position: 'absolute',
   top: '50%',
   left: '50%',
