@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Board from 'routes/board';
+import { Board } from 'routes/board';
 import EditProfile from 'routes/editProfile';
 import ErrorPage from 'routes/errorPage';
 import Main from 'routes/main';

@@ -19,6 +19,7 @@ import { v4 as uuid } from 'uuid';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 
 const style = {
+  boxSizing: 'content-box',
   position: 'absolute',
   top: '50%',
   left: '50%',
