@@ -27,6 +27,7 @@ export function RqtDemo() {
       title,
       owner: userId || '',
       users: [],
+      description: '',
     };
     await createBoard(board);
   };

@@ -69,7 +69,7 @@ export const CreateBoardModal = () => {
       title: data.title,
       owner: userId || '',
       users: [],
-      description: data.description,
+      description: data.description || '',
     };
     await createBoard(board);
   };
