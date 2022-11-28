@@ -72,6 +72,7 @@ export default function SignUpForm() {
                 fullWidth
                 {...register('name', nameRegisterOptions(language))}
                 label={language === 'EN' ? 'Name' : 'Имя'}
+                type="text"
                 autoFocus
                 error={!!errors.name}
                 helperText={errors.name?.message || ''}

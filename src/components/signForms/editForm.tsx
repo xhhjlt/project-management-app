@@ -2,19 +2,15 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import PersonIcon from '@mui/icons-material/Person';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { useNavigate } from 'react-router-dom';
 import { currentLanguage } from 'components/header/langSlice';
-import { AppRoutes } from 'types/routes';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useSignInMutation, useSignUpMutation } from 'services/api/auth';
-import { setUser } from './authSlice';
 import { loginRegisterOptions, nameRegisterOptions, passwordRegisterOptions } from './utils';
 
 interface EditProfileData {
@@ -35,15 +31,10 @@ export default function EditProfileForm() {
   } = useForm<EditProfileData>();
 
   const onSubmit: SubmitHandler<EditProfileData> = async (formData) => {
-    const resp = await signUp(formData);
-    if ('data' in resp) {
-      const { login, password } = formData;
-      const result = await signIn({ login, password });
-      if ('data' in result) {
-        dispatch(setUser(result.data));
-      }
-    }
+    // await signUp(formData);
   };
+
+  const confirmModal = () => {};
 
   return (
     <Container component="main" maxWidth="xs">
@@ -58,7 +49,7 @@ export default function EditProfileForm() {
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlinedIcon />
+          <PersonIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
           {language === 'EN' ? 'Edit Profile' : 'Редактировать профиль'}
@@ -67,10 +58,10 @@ export default function EditProfileForm() {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                autoComplete="given-name"
                 fullWidth
                 {...register('name', nameRegisterOptions(language))}
-                label={language === 'EN' ? 'Name' : 'Имя'}
+                label={language === 'EN' ? 'New Name' : 'Новое Имя'}
+                type="text"
                 autoFocus
                 error={!!errors.name}
                 helperText={errors.name?.message || ''}
@@ -80,7 +71,7 @@ export default function EditProfileForm() {
               <TextField
                 fullWidth
                 {...register('login', loginRegisterOptions(language))}
-                label={language === 'EN' ? 'Login' : 'Логин'}
+                label={language === 'EN' ? 'New Login' : 'Новый Логин'}
                 type="text"
                 error={!!errors.login}
                 helperText={errors.login?.message || ''}
@@ -90,17 +81,28 @@ export default function EditProfileForm() {
               <TextField
                 fullWidth
                 {...register('password', passwordRegisterOptions(language))}
-                label={language === 'EN' ? 'Password' : 'Пароль'}
+                label={language === 'EN' ? 'New Password' : 'Новый Пароль'}
                 type="password"
-                autoComplete="new-password"
                 error={!!errors.password}
                 helperText={errors.password?.message || ''}
               />
             </Grid>
           </Grid>
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-            {language === 'EN' ? 'Sign Up' : 'Зарегестрироваться'}
-          </Button>
+          <Box
+            sx={{
+              marginTop: 3,
+              marginButton: 2,
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Button type="button" color="error" variant="contained" onClick={confirm}>
+              {language === 'EN' ? 'Delete' : 'Удалить'}
+            </Button>
+            <Button type="submit" color="success" variant="contained">
+              {language === 'EN' ? 'Save' : 'Сохранить'}
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Container>
