@@ -3,6 +3,6 @@ export enum AppRoutes {
   SignUp = '/signUp',
   SignIn = '/signIn',
   Main = '/main',
-  Board = '/board',
+  Board = '/board/:id',
   EditProfile = '/editProfile',
 }

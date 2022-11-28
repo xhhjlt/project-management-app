@@ -5,6 +5,8 @@ import authReducer from '../components/signForms/authSlice';
 import API from 'services/api';
 import { authStorage, apiErrorHandler } from 'app/middleware';
 import boardReducer from '../components/board/boardSlice';
+import mainReducer from '../components/main/mainSlice';
+import commonReducer from '../components/common/commonSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +14,8 @@ export const store = configureStore({
     lang: langReducer,
     [API.reducerPath]: API.reducer,
     board: boardReducer,
+    main: mainReducer,
+    common: commonReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(API.middleware, apiErrorHandler, authStorage),

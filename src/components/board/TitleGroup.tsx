@@ -2,8 +2,13 @@ import { Stack, Typography } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import StarIcon from '@mui/icons-material/Star';
+import { useParams } from 'react-router-dom';
+import { useBoardByIdQuery } from 'services/api/boards';
 
 export const TitleGroup = () => {
+  const { id } = useParams();
+  const { data } = useBoardByIdQuery(id as string);
+
   return (
     <Stack direction="row" alignItems={'center'}>
       <Typography
@@ -21,7 +26,7 @@ export const TitleGroup = () => {
         contentEditable={true}
         onInput={(e) => console.log('e: ', e.currentTarget.textContent)}
       >
-        Board Title
+        {data?.title}
       </Typography>
       <div>
         <Checkbox
