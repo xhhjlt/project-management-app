@@ -9,7 +9,7 @@ const paperStyles = {
   width: 300,
   height: 150,
   p: '12px',
-  backgroundColor: '#f9fbe7', // '#f0f4c3',
+  backgroundColor: '#dcedc8',
   display: 'flex',
   flexDirection: 'column',
   cursor: 'pointer',

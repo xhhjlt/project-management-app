@@ -8,9 +8,9 @@ import { RouteTitle } from 'components/main/RouteTitle';
 const theme = createTheme({
   palette: {
     primary: {
-      light: '#ffff6e',
-      main: '#cddc39',
-      dark: '#99aa00',
+      light: '#bef67a',
+      main: '#8bc34a',
+      dark: '#5a9216',
       contrastText: '#212121',
     },
     secondary: {
