@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Board } from 'routes/board';
 import EditProfile from 'routes/editProfile';
 import ErrorPage from 'routes/errorPage';
-import Main from 'routes/main';
+import { Main } from 'routes/main';
 import Root from 'routes/root';
 import SignIn from 'routes/signIn';
 import Welcome from 'routes/welcome';
