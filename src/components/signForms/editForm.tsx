@@ -2,48 +2,47 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import PersonIcon from '@mui/icons-material/Person';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { useNavigate } from 'react-router-dom';
 import { currentLanguage } from 'components/header/langSlice';
-import { AppRoutes } from 'types/routes';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useSignInMutation, useSignUpMutation } from 'services/api/auth';
-import { setUser } from './authSlice';
 import { loginRegisterOptions, nameRegisterOptions, passwordRegisterOptions } from './utils';
+import { DeleteConfirmationModal } from 'components/common/DeleteConfirmationModal';
+import { changeLogin, clearUser, CurrentUserId } from './authSlice';
+import { useDeleteUserMutation, useUpdateUserMutation } from 'services/api/users';
+import { openDeleteConfirmationModal } from 'components/common/commonSlice';
 
-interface SignUpFormData {
+interface EditProfileData {
   name: string;
   login: string;
   password: string;
 }
 
-export default function SignUpForm() {
+export default function EditProfileForm() {
   const language = useAppSelector(currentLanguage);
-  const navigate = useNavigate();
+  const userId = useAppSelector(CurrentUserId);
+  const [deleteUser] = useDeleteUserMutation();
+  const [updateUser] = useUpdateUserMutation();
   const dispatch = useAppDispatch();
-  const [signUp] = useSignUpMutation();
-  const [signIn] = useSignInMutation();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignUpFormData>();
+  } = useForm<EditProfileData>();
 
-  const onSubmit: SubmitHandler<SignUpFormData> = async (formData) => {
-    const resp = await signUp(formData);
+  const onSubmit: SubmitHandler<EditProfileData> = async (formData) => {
+    const resp = await updateUser({ _id: userId, ...formData });
     if ('data' in resp) {
-      const { login, password } = formData;
-      const result = await signIn({ login, password });
-      if ('data' in result) {
-        dispatch(setUser(result.data));
-      }
+      dispatch(changeLogin(resp.data));
     }
+  };
+
+  const onDelete = () => {
+    dispatch(openDeleteConfirmationModal(userId));
   };
 
   return (
@@ -59,19 +58,18 @@ export default function SignUpForm() {
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlinedIcon />
+          <PersonIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          {language === 'EN' ? 'Sign Up' : 'Регистрация'}
+          {language === 'EN' ? 'Edit Profile' : 'Редактировать профиль'}
         </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                autoComplete="given-name"
                 fullWidth
                 {...register('name', nameRegisterOptions(language))}
-                label={language === 'EN' ? 'Name' : 'Имя'}
+                label={language === 'EN' ? 'New Name' : 'Новое Имя'}
                 type="text"
                 autoFocus
                 error={!!errors.name}
@@ -82,7 +80,7 @@ export default function SignUpForm() {
               <TextField
                 fullWidth
                 {...register('login', loginRegisterOptions(language))}
-                label={language === 'EN' ? 'Login' : 'Логин'}
+                label={language === 'EN' ? 'New Login' : 'Новый Логин'}
                 type="text"
                 error={!!errors.login}
                 helperText={errors.login?.message || ''}
@@ -92,35 +90,37 @@ export default function SignUpForm() {
               <TextField
                 fullWidth
                 {...register('password', passwordRegisterOptions(language))}
-                label={language === 'EN' ? 'Password' : 'Пароль'}
+                label={language === 'EN' ? 'New Password' : 'Новый Пароль'}
                 type="password"
-                autoComplete="new-password"
                 error={!!errors.password}
                 helperText={errors.password?.message || ''}
               />
             </Grid>
           </Grid>
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-            {language === 'EN' ? 'Sign Up' : 'Зарегестрироваться'}
-          </Button>
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-              <Link
-                href={AppRoutes.SignIn}
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(AppRoutes.SignIn);
-                }}
-                variant="body2"
-              >
-                {language === 'EN'
-                  ? 'Already have an account? Sign in'
-                  : 'Уже есть аккаунт? Войдите'}
-              </Link>
-            </Grid>
-          </Grid>
+          <Box
+            sx={{
+              marginTop: 3,
+              marginButton: 2,
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Button type="button" color="error" variant="contained" onClick={onDelete}>
+              {language === 'EN' ? 'Delete' : 'Удалить'}
+            </Button>
+            <Button type="submit" color="success" variant="contained">
+              {language === 'EN' ? 'Save' : 'Сохранить'}
+            </Button>
+          </Box>
         </Box>
       </Box>
+      <DeleteConfirmationModal
+        text={{ title: 'user', body: 'user' }}
+        onDelete={(id) => {
+          deleteUser(id).then(() => dispatch(clearUser()));
+        }}
+        id={userId}
+      />
     </Container>
   );
 }

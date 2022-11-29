@@ -3,17 +3,17 @@ import { RootState } from 'app/store';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 
 interface authState {
-  token: string | null;
-  id: string | null;
-  login: string | null;
+  token: string;
+  id: string;
+  login: string;
 }
 interface AppJwtPayload extends JwtPayload {
   id: string;
   login: string;
 }
 
-const token = localStorage.getItem('token');
-const decoded = token ? jwtDecode<AppJwtPayload>(token) : { id: null, login: null };
+const token = localStorage.getItem('token') || '';
+const decoded = token ? jwtDecode<AppJwtPayload>(token) : { id: '', login: '' };
 const initialState: authState = { token, ...decoded };
 
 const slice = createSlice({
@@ -26,15 +26,18 @@ const slice = createSlice({
       state.id = decoded.id;
       state.login = decoded.login;
     },
+    changeLogin: (state, { payload: { login } }: PayloadAction<{ login: string }>) => {
+      state.login = login;
+    },
     clearUser: (state) => {
-      state.token = null;
-      state.id = null;
-      state.login = null;
+      state.token = '';
+      state.id = '';
+      state.login = '';
     },
   },
 });
 
-export const { setUser, clearUser } = slice.actions;
+export const { setUser, clearUser, changeLogin } = slice.actions;
 export default slice.reducer;
 export const isUserLoggedIn = (state: RootState) => Boolean(state.auth.id);
 export const CurrentUserId = (state: RootState) => state.auth.id;
