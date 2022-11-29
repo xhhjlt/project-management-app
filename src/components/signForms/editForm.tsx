@@ -10,8 +10,11 @@ import Container from '@mui/material/Container';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { currentLanguage } from 'components/header/langSlice';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useSignInMutation, useSignUpMutation } from 'services/api/auth';
 import { loginRegisterOptions, nameRegisterOptions, passwordRegisterOptions } from './utils';
+import { DeleteConfirmationModal } from 'components/common/DeleteConfirmationModal';
+import { changeLogin, clearUser, CurrentUserId } from './authSlice';
+import { useDeleteUserMutation, useUpdateUserMutation } from 'services/api/users';
+import { openDeleteConfirmationModal } from 'components/common/commonSlice';
 
 interface EditProfileData {
   name: string;
@@ -21,9 +24,10 @@ interface EditProfileData {
 
 export default function EditProfileForm() {
   const language = useAppSelector(currentLanguage);
+  const userId = useAppSelector(CurrentUserId);
+  const [deleteUser] = useDeleteUserMutation();
+  const [updateUser] = useUpdateUserMutation();
   const dispatch = useAppDispatch();
-  const [signUp] = useSignUpMutation();
-  const [signIn] = useSignInMutation();
   const {
     register,
     handleSubmit,
@@ -31,10 +35,15 @@ export default function EditProfileForm() {
   } = useForm<EditProfileData>();
 
   const onSubmit: SubmitHandler<EditProfileData> = async (formData) => {
-    // await signUp(formData);
+    const resp = await updateUser({ _id: userId, ...formData });
+    if ('data' in resp) {
+      dispatch(changeLogin(resp.data));
+    }
   };
 
-  const confirmModal = () => {};
+  const onDelete = () => {
+    dispatch(openDeleteConfirmationModal(userId));
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -96,7 +105,7 @@ export default function EditProfileForm() {
               justifyContent: 'space-between',
             }}
           >
-            <Button type="button" color="error" variant="contained" onClick={confirm}>
+            <Button type="button" color="error" variant="contained" onClick={onDelete}>
               {language === 'EN' ? 'Delete' : 'Удалить'}
             </Button>
             <Button type="submit" color="success" variant="contained">
@@ -105,6 +114,13 @@ export default function EditProfileForm() {
           </Box>
         </Box>
       </Box>
+      <DeleteConfirmationModal
+        text={{ title: 'user', body: 'user' }}
+        onDelete={(id) => {
+          deleteUser(id).then(() => dispatch(clearUser()));
+        }}
+        id={userId}
+      />
     </Container>
   );
 }

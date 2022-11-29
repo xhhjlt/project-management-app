@@ -66,17 +66,12 @@ export const DeleteConfirmationModal = ({ text, onDelete, id }: DeleteConfirmati
             </Typography>
             <Typography>Are you sure you want to delete this {text.body}?</Typography>
             <Stack direction="row" justifyContent="space-evenly">
-              <Button
-                variant="contained"
-                color="neutral"
-                sx={{ width: '7rem' }}
-                onClick={handleClose}
-              >
+              <Button variant="contained" sx={{ width: '7rem' }} onClick={handleClose} color="info">
                 Cancel
               </Button>
               <Button
                 variant="contained"
-                color="secondary"
+                color="error"
                 sx={{ width: '7rem' }}
                 onClick={() => {
                   onDelete(id);
