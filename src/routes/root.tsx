@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import { ErrorBoundary } from 'components/common/errorBoundary';
 import Footer from 'components/footer/footer';
 import Header from 'components/header/header';
 import { Outlet } from 'react-router-dom';
@@ -12,9 +13,11 @@ export default function Root() {
         minHeight: '100vh',
       }}
     >
-      <Header />
-      <Outlet />
-      <Footer />
+      <ErrorBoundary>
+        <Header />
+        <Outlet />
+        <Footer />
+      </ErrorBoundary>
     </Box>
   );
 }

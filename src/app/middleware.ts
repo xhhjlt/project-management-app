@@ -1,10 +1,11 @@
 import { isRejectedWithValue } from '@reduxjs/toolkit';
 import type { MiddlewareAPI, Middleware } from '@reduxjs/toolkit';
 import { clearUser, setUser } from 'components/signForms/authSlice';
+import { showErrorToast } from 'components/common/commonSlice';
 
 export const apiErrorHandler: Middleware = (api: MiddlewareAPI) => (next) => (action) => {
   if (isRejectedWithValue(action)) {
-    console.log(action.payload.data);
+    api.dispatch(showErrorToast(action.payload.data.message));
     switch (action.payload.status) {
       case 403:
         api.dispatch(clearUser());
