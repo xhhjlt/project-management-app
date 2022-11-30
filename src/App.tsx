@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import AppRouter from 'components/router/appRouter';
+import { SnackbarProvider } from 'notistack';
 
 export const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -29,7 +30,9 @@ export default function App() {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <AppRouter />
+        <SnackbarProvider>
+          <AppRouter />
+        </SnackbarProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>
   );

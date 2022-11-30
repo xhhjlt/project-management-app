@@ -8,6 +8,8 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { currentLanguage, langToggle } from './langSlice';
 import { isUserLoggedIn, clearUser } from 'components/signForms/authSlice';
 import { AppRoutes } from 'types/routes';
+import { useSnackbar } from 'notistack';
+import { errorToastFlag, errorToastMessage } from 'components/common/commonSlice';
 
 export default function Header() {
   const language = useAppSelector(currentLanguage);
@@ -17,10 +19,19 @@ export default function Header() {
   const navigate = useNavigate();
   const colorMode = React.useContext(ColorModeContext);
   const [scrolled, setScrolled] = useState(window.scrollY);
+  const { enqueueSnackbar } = useSnackbar();
+  const errorMessage = useAppSelector(errorToastMessage);
+  const errorFlag = useAppSelector(errorToastFlag);
 
   useEffect(() => {
     window.addEventListener('scroll', () => setScrolled(window.scrollY));
   }, []);
+
+  useEffect(() => {
+    if (errorMessage) {
+      enqueueSnackbar(errorMessage, { variant: 'error' });
+    }
+  }, [enqueueSnackbar, errorMessage, errorFlag]);
 
   return (
     <AppBar
