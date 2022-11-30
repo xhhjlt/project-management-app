@@ -30,7 +30,7 @@ export default function App() {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <SnackbarProvider>
+        <SnackbarProvider anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
           <AppRouter />
         </SnackbarProvider>
       </ThemeProvider>
