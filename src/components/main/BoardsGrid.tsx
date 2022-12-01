@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 import { useAllBoardsQuery } from 'services/api/boards';
 import { Board } from './Board';
-import { CreateBoardModal } from './CreateBoardModal';
 
 const boardGridStyles = {
   display: 'flex',
@@ -18,7 +17,6 @@ export const BoardsGrid = () => {
       {data?.map((board) => (
         <Board key={board._id} id={board._id} title={board.title} description={board.description} />
       ))}
-      <CreateBoardModal />
     </Box>
   );
 };

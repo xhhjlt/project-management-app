@@ -4,10 +4,11 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import { GitHub } from '@mui/icons-material';
-import { useTheme } from '@mui/material';
+import { useMediaQuery, useTheme } from '@mui/material';
 
 export default function Footer() {
   const theme = useTheme();
+  const matches = useMediaQuery('(max-width:400px)');
   return (
     <Box
       component="footer"
@@ -24,23 +25,15 @@ export default function Footer() {
         sx={{
           display: 'flex',
           justifyContent: 'space-evenly',
+          flexWrap: 'wrap',
+          gap: 1,
         }}
       >
-        <Link href="https://rs.school/react/">
-          <img
-            src={
-              process.env.PUBLIC_URL + theme.palette.mode === 'light'
-                ? '/rs_school_js.svg'
-                : 'rs_school_js_white.svg'
-            }
-            height="20px"
-          />
-        </Link>
         <Typography
           variant="body1"
           sx={{
             display: 'flex',
-            gap: 2,
+            gap: 1,
           }}
         >
           <Link
@@ -53,7 +46,7 @@ export default function Footer() {
             }}
           >
             <GitHub />
-            <span>Eldar</span>
+            Eldar
           </Link>
           <Link
             color="inherit"
@@ -65,7 +58,7 @@ export default function Footer() {
             }}
           >
             <GitHub />
-            <span>Milena</span>
+            Milena
           </Link>
           <Link
             color="inherit"
@@ -77,9 +70,19 @@ export default function Footer() {
             }}
           >
             <GitHub />
-            <span>Alexander</span>
+            Alexander
           </Link>
         </Typography>
+        <Link href="https://rs.school/react/" sx={{ order: matches ? 0 : -1 }}>
+          <img
+            src={
+              process.env.PUBLIC_URL + theme.palette.mode === 'light'
+                ? '/rs_school_js.svg'
+                : 'rs_school_js_white.svg'
+            }
+            height="20px"
+          />
+        </Link>
         <Typography variant="body1">© 2022</Typography>
       </Container>
     </Box>
