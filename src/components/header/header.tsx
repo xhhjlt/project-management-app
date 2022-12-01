@@ -7,6 +7,8 @@ import {
   useTheme,
   Box,
   useMediaQuery,
+  Tooltip,
+  Avatar,
 } from '@mui/material';
 import {
   DashboardRounded,
@@ -40,7 +42,9 @@ export default function Header() {
   const { enqueueSnackbar } = useSnackbar();
   const errorMessage = useAppSelector(errorToastMessage);
   const errorFlag = useAppSelector(errorToastFlag);
-  const matches = useMediaQuery('(min-width:1000px)');
+  const matches1000 = useMediaQuery('(min-width:1000px)');
+  const matches680 = useMediaQuery('(min-width:680px)');
+  const matches380 = useMediaQuery('(min-width:380px)');
 
   useEffect(() => {
     window.addEventListener('scroll', () => setScrolled(window.scrollY));
@@ -67,70 +71,69 @@ export default function Header() {
       )}
     >
       <Toolbar>
-        <Box mr="auto">
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ cursor: 'pointer' }}
-            onClick={() => navigate(AppRoutes.Welcome)}
-          >
-            PMA
-          </Typography>
+        <Box
+          mr="auto"
+          onClick={() => navigate(AppRoutes.Welcome)}
+          sx={{ cursor: 'pointer', display: 'flex', gap: 2 }}
+        >
+          <Avatar alt="logo" src="logo.jpg" sx={{ width: 50, height: 50 }} />
+          {matches680 && (
+            <Box>
+              <Typography variant="h6">
+                {language === 'EN' ? `I'll do it tomorrow!` : `Я сделаю это завтра!`}
+              </Typography>
+              <Typography variant="body2">
+                {language === 'EN' ? `(Not exactly)` : `(Но это не точно)`}
+              </Typography>
+            </Box>
+          )}
         </Box>
         {user ? (
           <>
-            <Button
-              size="large"
+            <IconButton
+              size="small"
               color="inherit"
-              startIcon={<PersonRounded />}
               onClick={() => navigate(AppRoutes.EditProfile)}
             >
-              {matches && (language === 'EN' ? ' Edit profile' : ' Редактировать профиль')}
-            </Button>
-            <Button
-              size="large"
+              <PersonRounded />
+              {matches1000 && (language === 'EN' ? ' Edit profile' : ' Редактировать профиль')}
+            </IconButton>
+            <IconButton
+              size="small"
               color="inherit"
-              startIcon={<LogoutRounded />}
               onClick={() => {
                 dispatch(clearUser());
               }}
             >
-              {matches && (language === 'EN' ? ' Sign Out' : ' Выход')}
-            </Button>
-            <Button
-              size="large"
+              <LogoutRounded />
+              {matches1000 && (language === 'EN' ? ' Sign Out' : ' Выход')}
+            </IconButton>
+            <IconButton
+              size="small"
               color="inherit"
-              startIcon={<DashboardRounded />}
               onClick={() => {
                 dispatch(openCreateBoardModal());
               }}
             >
-              {matches && (language === 'EN' ? ' Create new board' : ' Создать доску')}
-            </Button>
+              <DashboardRounded />
+              {matches1000 && (language === 'EN' ? ' Create new board' : ' Создать доску')}
+            </IconButton>
           </>
         ) : (
           <>
-            <Button
-              size="large"
-              color="inherit"
-              startIcon={<LoginRounded />}
-              onClick={() => navigate(AppRoutes.SignIn)}
-            >
-              {matches && (language === 'EN' ? ' Sign In' : ' Войти')}
-            </Button>
-            <Button
-              size="large"
-              color="inherit"
-              startIcon={<AppRegistrationRounded />}
-              onClick={() => navigate(AppRoutes.SignUp)}
-            >
-              {matches && (language === 'EN' ? 'Sign Up' : 'Регистрация')}
-            </Button>
+            <IconButton size="small" color="inherit" onClick={() => navigate(AppRoutes.SignIn)}>
+              <LoginRounded />
+              {matches1000 && (language === 'EN' ? ' Sign In' : ' Войти')}
+            </IconButton>
+            <IconButton size="small" color="inherit" onClick={() => navigate(AppRoutes.SignUp)}>
+              <AppRegistrationRounded />
+              {matches1000 && (language === 'EN' ? 'Sign Up' : 'Регистрация')}
+            </IconButton>
           </>
         )}
-        <Button size="medium" color="inherit" onClick={() => dispatch(langToggle())}>
-          {language === 'EN' ? 'ru' : 'en'}
-        </Button>
+        <IconButton size="small" color="inherit" onClick={() => dispatch(langToggle())}>
+          {language === 'EN' ? 'RU' : 'EN'}
+        </IconButton>
         <IconButton onClick={colorMode.toggleColorMode} color="inherit">
           {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
