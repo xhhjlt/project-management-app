@@ -1,4 +1,13 @@
-import { AppBar, Button, IconButton, Toolbar, Typography, useTheme, Box } from '@mui/material';
+import {
+  AppBar,
+  Button,
+  IconButton,
+  Toolbar,
+  Typography,
+  useTheme,
+  Box,
+  useMediaQuery,
+} from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import React, { useEffect, useState } from 'react';
@@ -10,6 +19,9 @@ import { isUserLoggedIn, clearUser } from 'components/signForms/authSlice';
 import { AppRoutes } from 'types/routes';
 import { useSnackbar } from 'notistack';
 import { errorToastFlag, errorToastMessage } from 'components/common/commonSlice';
+import { openCreateBoardModal } from 'components/main/mainSlice';
+import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
+import { CreateBoardModal } from 'components/main/CreateBoardModal';
 
 export default function Header() {
   const language = useAppSelector(currentLanguage);
@@ -22,6 +34,7 @@ export default function Header() {
   const { enqueueSnackbar } = useSnackbar();
   const errorMessage = useAppSelector(errorToastMessage);
   const errorFlag = useAppSelector(errorToastFlag);
+  const matches = useMediaQuery('(max-width:1000px)');
 
   useEffect(() => {
     window.addEventListener('scroll', () => setScrolled(window.scrollY));
@@ -72,7 +85,14 @@ export default function Header() {
             >
               {language === 'EN' ? 'Sign Out' : 'Выход'}
             </Button>
-            <Button size="large" color="inherit" onClick={() => alert('модалочка')}>
+            <Button
+              size="large"
+              color="inherit"
+              startIcon={<DashboardRoundedIcon />}
+              onClick={() => {
+                dispatch(openCreateBoardModal());
+              }}
+            >
               {language === 'EN' ? 'Create new board' : 'Создать доску'}
             </Button>
           </>
@@ -93,6 +113,7 @@ export default function Header() {
           {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
       </Toolbar>
+      <CreateBoardModal />
     </AppBar>
   );
 }

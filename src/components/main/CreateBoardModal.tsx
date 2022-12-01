@@ -134,13 +134,18 @@ export const CreateBoardModal = () => {
               <Stack direction="row" justifyContent="space-evenly">
                 <Button
                   variant="contained"
-                  color="neutral"
+                  color="info"
                   sx={{ width: '7rem' }}
                   onClick={handleClose}
                 >
                   {language === 'EN' ? 'Cancel' : 'ОТМЕНА'}
                 </Button>
-                <Button variant="contained" component="label" sx={{ width: '7rem' }}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  color="success"
+                  sx={{ width: '7rem' }}
+                >
                   {language === 'EN' ? 'CREATE' : 'СОЗДАТЬ'}
                   <input type="submit" hidden />
                 </Button>

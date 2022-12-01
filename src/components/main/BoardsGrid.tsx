@@ -18,7 +18,6 @@ export const BoardsGrid = () => {
       {data?.map((board) => (
         <Board key={board._id} id={board._id} title={board.title} description={board.description} />
       ))}
-      <CreateBoardModal />
     </Box>
   );
 };
