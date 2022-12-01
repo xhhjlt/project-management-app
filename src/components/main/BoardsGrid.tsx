@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 import { useAllBoardsQuery } from 'services/api/boards';
 import { Board } from './Board';
-import { CreateBoardModal } from './CreateBoardModal';
 
 const boardGridStyles = {
   display: 'flex',

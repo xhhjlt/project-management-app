@@ -17,7 +17,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { closeCreateBoardModal, selectCreateBoardModalOpen } from './mainSlice';
 import { currentLanguage } from 'components/header/langSlice';
-import { CurrentUserId, isUserLoggedIn } from 'components/signForms/authSlice';
+import { CurrentUserId } from 'components/signForms/authSlice';
 import { useCreateBoardMutation } from 'services/api/boards';
 
 const style = {
@@ -51,8 +51,7 @@ export const CreateBoardModal = () => {
   const createBoardModalOpen = useAppSelector(selectCreateBoardModalOpen);
   const language = useAppSelector(currentLanguage);
   const userId = useAppSelector(CurrentUserId);
-  const loggedIn = useAppSelector(isUserLoggedIn);
-  const [createBoard, { isLoading: isCreating }] = useCreateBoardMutation();
+  const [createBoard] = useCreateBoardMutation();
   const dispatch = useAppDispatch();
 
   const handleClose = useCallback(() => {
