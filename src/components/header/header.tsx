@@ -1,13 +1,11 @@
 import {
   AppBar,
-  Button,
   IconButton,
   Toolbar,
   Typography,
   useTheme,
   Box,
   useMediaQuery,
-  Tooltip,
   Avatar,
 } from '@mui/material';
 import {
@@ -44,7 +42,6 @@ export default function Header() {
   const errorFlag = useAppSelector(errorToastFlag);
   const matches1000 = useMediaQuery('(min-width:1000px)');
   const matches680 = useMediaQuery('(min-width:680px)');
-  const matches380 = useMediaQuery('(min-width:380px)');
 
   useEffect(() => {
     window.addEventListener('scroll', () => setScrolled(window.scrollY));
@@ -59,22 +56,27 @@ export default function Header() {
   return (
     <AppBar
       position="sticky"
-      sx={Object.assign(
-        scrolled
+      sx={{
+        ...(scrolled
           ? {
               borderRadius: '0% 0% 30px 30px',
             }
-          : {},
-        {
+          : {}),
+        ...{
           transition: 'all 0.3s',
-        }
-      )}
+          padding: matches680 ? '0 24px' : '0 2px',
+        },
+      }}
     >
-      <Toolbar>
+      <Toolbar sx={{ padding: 0 }}>
         <Box
           mr="auto"
           onClick={() => navigate(AppRoutes.Welcome)}
-          sx={{ cursor: 'pointer', display: 'flex', gap: 2 }}
+          sx={{
+            cursor: 'pointer',
+            display: 'flex',
+            gap: 2,
+          }}
         >
           <Avatar alt="logo" src="logo.jpg" sx={{ width: 50, height: 50 }} />
           {matches680 && (
@@ -95,8 +97,8 @@ export default function Header() {
               color="inherit"
               onClick={() => navigate(AppRoutes.EditProfile)}
             >
-              <PersonRounded />
-              {matches1000 && (language === 'EN' ? ' Edit profile' : ' Редактировать профиль')}
+              <PersonRounded sx={{ m: '5px' }} />
+              {matches1000 && (language === 'EN' ? 'Edit profile' : 'Редактировать профиль')}
             </IconButton>
             <IconButton
               size="small"
@@ -105,8 +107,8 @@ export default function Header() {
                 dispatch(clearUser());
               }}
             >
-              <LogoutRounded />
-              {matches1000 && (language === 'EN' ? ' Sign Out' : ' Выход')}
+              <LogoutRounded sx={{ m: '5px' }} />
+              {matches1000 && (language === 'EN' ? 'Sign Out' : 'Выход')}
             </IconButton>
             <IconButton
               size="small"
@@ -115,18 +117,18 @@ export default function Header() {
                 dispatch(openCreateBoardModal());
               }}
             >
-              <DashboardRounded />
-              {matches1000 && (language === 'EN' ? ' Create new board' : ' Создать доску')}
+              <DashboardRounded sx={{ m: '5px' }} />
+              {matches1000 && (language === 'EN' ? 'Create new board' : 'Создать доску')}
             </IconButton>
           </>
         ) : (
           <>
             <IconButton size="small" color="inherit" onClick={() => navigate(AppRoutes.SignIn)}>
-              <LoginRounded />
-              {matches1000 && (language === 'EN' ? ' Sign In' : ' Войти')}
+              <LoginRounded sx={{ m: '5px' }} />
+              {matches1000 && (language === 'EN' ? 'Sign In' : 'Войти')}
             </IconButton>
             <IconButton size="small" color="inherit" onClick={() => navigate(AppRoutes.SignUp)}>
-              <AppRegistrationRounded />
+              <AppRegistrationRounded sx={{ m: '5px' }} />
               {matches1000 && (language === 'EN' ? 'Sign Up' : 'Регистрация')}
             </IconButton>
           </>
