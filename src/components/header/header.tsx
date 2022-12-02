@@ -114,6 +114,7 @@ export default function Header() {
               size="small"
               color="inherit"
               onClick={() => {
+                navigate(AppRoutes.Main);
                 dispatch(openCreateBoardModal());
               }}
             >
