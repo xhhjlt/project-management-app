@@ -4,6 +4,22 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import AppRouter from 'components/router/appRouter';
 import { SnackbarProvider } from 'notistack';
 
+declare module '@mui/material/styles' {
+  interface Palette {
+    neutral: Palette['primary'];
+  }
+
+  interface PaletteOptions {
+    neutral?: PaletteOptions['primary'];
+  }
+}
+
+declare module '@mui/material/Button' {
+  interface ButtonPropsColorOverrides {
+    neutral: true;
+  }
+}
+
 export const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
 export default function App() {
@@ -22,6 +38,10 @@ export default function App() {
       createTheme({
         palette: {
           mode,
+          neutral: {
+            main: '#64748B',
+            contrastText: '#fff',
+          },
         },
       }),
     [mode]
