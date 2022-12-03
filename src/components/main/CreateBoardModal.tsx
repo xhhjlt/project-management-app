@@ -133,7 +133,7 @@ export const CreateBoardModal = () => {
               <Stack direction="row" justifyContent="space-evenly">
                 <Button
                   variant="contained"
-                  color="info"
+                  color="neutral"
                   sx={{ width: '7rem' }}
                   onClick={handleClose}
                 >
