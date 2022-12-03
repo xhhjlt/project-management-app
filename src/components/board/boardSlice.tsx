@@ -1,23 +1,21 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../app/store';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Column } from 'types/api/columns';
+import { RootState } from '../../app/store';
 
 export type DeleteColumnType = {
   isOpen: boolean;
   columnId: string | null;
 };
 
-export type ChipType = {
-  value: string;
-  icon: string;
-};
-
 export type ItemType = {
   id: string;
   title: string;
-  description?: string;
-  priority: ChipType;
-  size: ChipType;
-  index: number;
+  description: string;
+  priority: string;
+  size: string;
+  order: number;
+  boardId: string;
+  columnId: string;
 };
 
 export type DeleteItemPayloadOnDrag = {
@@ -32,67 +30,45 @@ export type AddItemPayloadOnDrop = {
 };
 
 export type AddColumnPayloadOnDrop = {
-  draggableColumn: ColumnType;
+  draggableColumn: Column;
   destinationIndex: number;
 };
 
-export type ItemPayloadType = {
-  title: string;
-  description?: string;
-  priority: ChipType;
-  size: ChipType;
-};
-
-export type ColumnType = {
-  id: string;
-  title?: string;
-  items?: Array<ItemType>;
-  index: number;
-};
-
-export type ItemModalType = {
+export type CreateItemModalType = {
   isOpen: boolean;
   columnId: string | null;
 };
 
-export type ItemDescriptionModalType = {
+export type ItemModalType = {
   isOpen: boolean;
   itemId: string | null;
-  itemTitle: string | null;
-  itemDescription?: string | null;
-  itemPriority?: ChipType;
-  itemSize?: ChipType;
+  columnId: string | null;
 };
 
-export type DeleteItemType = {
-  isOpen: boolean;
-  itemId: string | null;
+export type ItemModalPayloadType = {
+  itemId: string;
+  columnId: string;
 };
 
 export type BoardState = {
   columnModalOpen: boolean;
-  boardColumns: Array<ColumnType>;
   deleteColumnModalOpen: DeleteColumnType;
-  itemModalOpen: ItemModalType;
-  itemDescriptionModalOpen: ItemDescriptionModalType;
-  deleteItemModalOpen: DeleteItemType;
-  // status: 'idle' | 'loading' | 'failed';
+  itemModalOpen: CreateItemModalType;
+  itemDescriptionModalOpen: ItemModalType;
+  deleteItemModalOpen: ItemModalType;
 };
 
 const initialState: BoardState = {
   columnModalOpen: false,
-  boardColumns: [],
   deleteColumnModalOpen: { isOpen: false, columnId: null },
   itemModalOpen: { isOpen: false, columnId: null },
-  itemDescriptionModalOpen: { isOpen: false, itemId: null, itemTitle: null, itemDescription: null },
-  deleteItemModalOpen: { isOpen: false, itemId: null },
-  // status: 'idle',
+  itemDescriptionModalOpen: { isOpen: false, itemId: null, columnId: null },
+  deleteItemModalOpen: { isOpen: false, itemId: null, columnId: null },
 };
 
 export const boardSlice = createSlice({
   name: 'board',
   initialState,
-  // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     openColumnModal: (state) => {
       state.columnModalOpen = true;
@@ -100,169 +76,53 @@ export const boardSlice = createSlice({
     closeColumnModal: (state) => {
       state.columnModalOpen = false;
     },
-    addBoardColumn: (state, action: PayloadAction<ColumnType>) => {
-      state.boardColumns.push(action.payload);
-    },
-    deleteBoardColumn: (state) => {
-      state.boardColumns = state.boardColumns.filter(
-        (el) => el.id !== state.deleteColumnModalOpen.columnId
-      );
-    },
-    setBoardColumns: (state, action: PayloadAction<Array<ColumnType>>) => {
-      state.boardColumns = action.payload;
-    },
-    openDeleteColumnModal: (state, action: PayloadAction<ColumnType>) => {
+    openDeleteColumnModal: (state, action: PayloadAction<Column>) => {
       state.deleteColumnModalOpen.isOpen = true;
-      state.deleteColumnModalOpen.columnId = action.payload.id;
+      state.deleteColumnModalOpen.columnId = action.payload._id;
     },
     closeDeleteColumnModal: (state) => {
       state.deleteColumnModalOpen.isOpen = false;
     },
-    openItemModal: (state, action: PayloadAction<ColumnType>) => {
+    openItemModal: (state, action: PayloadAction<Column>) => {
       state.itemModalOpen.isOpen = true;
-      state.itemModalOpen.columnId = action.payload.id;
+      state.itemModalOpen.columnId = action.payload._id;
     },
     closeItemModal: (state) => {
       state.itemModalOpen.isOpen = false;
     },
-    addNewItem: (state, action: PayloadAction<ItemType>) => {
-      const column = state.boardColumns.find((el) => el.id === state.itemModalOpen.columnId);
-      if (column) {
-        if (!column.items) {
-          column.items = [];
-        }
-        column.items!.push(action.payload);
-      }
-    },
-    openItemDescriptionModal: (state, action: PayloadAction<ItemType>) => {
+    openItemDescriptionModal: (state, action: PayloadAction<ItemModalPayloadType>) => {
       state.itemDescriptionModalOpen.isOpen = true;
-      state.itemDescriptionModalOpen.itemId = action.payload.id;
-      state.itemDescriptionModalOpen.itemTitle = action.payload.title;
-      state.itemDescriptionModalOpen.itemDescription = action.payload.description;
-      state.itemDescriptionModalOpen.itemPriority = action.payload.priority;
-      state.itemDescriptionModalOpen.itemSize = action.payload.size;
+      state.itemDescriptionModalOpen.itemId = action.payload.itemId;
+      state.itemDescriptionModalOpen.columnId = action.payload.columnId;
     },
     closeItemDescriptionModal: (state) => {
       state.itemDescriptionModalOpen.isOpen = false;
     },
-    setItem: (state, action: PayloadAction<ItemPayloadType>) => {
-      const itemId = state.itemDescriptionModalOpen.itemId;
-      const item = state.boardColumns
-        .map((col) => col.items)
-        .flat()
-        .find((item) => item?.id === itemId);
-
-      if (item) {
-        item.title = action.payload.title;
-        item.description = action.payload.description;
-        item.priority.value = action.payload.priority.value;
-        item.priority.icon = action.payload.priority.icon;
-        item.size.value = action.payload.size.value;
-        item.size.icon = action.payload.size.icon;
-      }
-    },
-    setColumnTitle: (state, action: PayloadAction<ColumnType>) => {
-      const column = state.boardColumns.find((el) => el.id === action.payload.id);
-      column!.title = action.payload.title;
-    },
-    deleteItemOnDrag: (state, action: PayloadAction<DeleteItemPayloadOnDrag>) => {
-      const srcColumn = state.boardColumns.find((col) => col.id === action.payload.srcColumnId)!;
-      srcColumn.items = srcColumn.items!.filter((item) => item.id !== action.payload.draggableId);
-    },
-    addItemOnDrop: (state, action: PayloadAction<AddItemPayloadOnDrop>) => {
-      const destColumn = state.boardColumns.find((col) => col.id === action.payload.destColumnId)!;
-      destColumn.items!.splice(action.payload.destinationIndex, 0, action.payload.draggableItem);
-    },
-    deleteColumnOnDrag: (state, action: PayloadAction<string>) => {
-      state.boardColumns = state.boardColumns.filter((el) => el.id !== action.payload);
-    },
-    addColumnOnDrop: (state, action: PayloadAction<AddColumnPayloadOnDrop>) => {
-      state.boardColumns.splice(action.payload.destinationIndex, 0, action.payload.draggableColumn);
-    },
-
-    // setItemPriority: (state, action: PayloadAction<ChipType>) => {
-    //   const itemId = state.itemDescriptionModalOpen.itemId;
-    //   const item = state.boardColumns
-    //     .map((col) => col.items)
-    //     .flat()
-    //     .find((item) => item?.id === itemId);
-
-    //   if (item) {
-    //     item.priority.value = action.payload.value;
-    //     item.priority.icon = action.payload.icon;
-    //   }
-    // },
-    // setItemSize: (state, action: PayloadAction<ChipType>) => {
-    //   const itemId = state.itemDescriptionModalOpen.itemId;
-    //   const item = state.boardColumns
-    //     .map((col) => col.items)
-    //     .flat()
-    //     .find((item) => item?.id === itemId);
-
-    //   if (item) {
-    //     item.size.value = action.payload.value;
-    //     item.size.icon = action.payload.icon;
-    //   }
-    // },
-    openDeleteItemModal: (state, action: PayloadAction<string>) => {
+    openDeleteItemModal: (state, action: PayloadAction<ItemModalPayloadType>) => {
       state.deleteItemModalOpen.isOpen = true;
-      state.deleteItemModalOpen.itemId = action.payload;
+      state.deleteItemModalOpen.itemId = action.payload.itemId;
+      state.deleteItemModalOpen.columnId = action.payload.columnId;
     },
     closeDeleteItemModal: (state) => {
       state.deleteItemModalOpen.isOpen = false;
     },
-    deleteBoardItem: (state) => {
-      const itemId = state.deleteItemModalOpen.itemId;
-
-      // https://stackoverflow.com/questions/38375646/filtering-array-of-objects-with-arrays-based-on-nested-value
-      state.boardColumns = state.boardColumns.map((element) => {
-        return { ...element, items: element.items?.filter((item) => item?.id !== itemId) };
-      });
-    },
   },
-  // The `extraReducers` field lets the slice handle actions defined elsewhere,
-  // including actions generated by createAsyncThunk or in other slices.
-  // extraReducers: (builder) => {
-  //   builder
-  //     .addCase(incrementAsync.pending, (state) => {
-  //       state.status = 'loading';
-  //     })
-  //     .addCase(incrementAsync.fulfilled, (state, action) => {
-  //       state.status = 'idle';
-  //       state.value += action.payload;
-  //     })
-  //     .addCase(incrementAsync.rejected, (state) => {
-  //       state.status = 'failed';
-  //     });
-  // },
 });
 
 export const {
   openColumnModal,
   closeColumnModal,
-  addBoardColumn,
-  deleteBoardColumn,
   openDeleteColumnModal,
   closeDeleteColumnModal,
   openItemModal,
   closeItemModal,
-  addNewItem,
   openItemDescriptionModal,
   closeItemDescriptionModal,
-  setItem,
   openDeleteItemModal,
   closeDeleteItemModal,
-  deleteBoardItem,
-  setColumnTitle,
-  setBoardColumns,
-  deleteItemOnDrag,
-  addItemOnDrop,
-  deleteColumnOnDrag,
-  addColumnOnDrop,
 } = boardSlice.actions;
 
 export const selectColumnModalOpen = (state: RootState) => state.board.columnModalOpen;
-export const selectBoardColumns = (state: RootState) => state.board.boardColumns;
 export const selectDeleteColumnModalOpen = (state: RootState) => state.board.deleteColumnModalOpen;
 export const selectItemModalOpen = (state: RootState) => state.board.itemModalOpen;
 export const selectItemDescriptionModalOpen = (state: RootState) =>

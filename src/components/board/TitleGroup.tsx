@@ -15,16 +15,12 @@ export const TitleGroup = () => {
         variant="h4"
         sx={{
           color: '#212121',
-          cursor: 'pointer',
           p: '0.5rem 1rem',
           '&:focus': {
             outline: `2px solid #bdbdbd`,
             borderRadius: '4px',
           },
         }}
-        suppressContentEditableWarning={true}
-        contentEditable={true}
-        onInput={(e) => console.log('e: ', e.currentTarget.textContent)}
       >
         {data?.title}
       </Typography>

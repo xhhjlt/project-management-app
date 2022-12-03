@@ -1,12 +1,10 @@
 import { Backdrop, Box, Button, Fade, Modal, Stack, Typography, IconButton } from '@mui/material';
 import { useCallback } from 'react';
-import {
-  closeDeleteColumnModal,
-  deleteBoardColumn,
-  selectDeleteColumnModalOpen,
-} from './boardSlice';
+import { closeDeleteColumnModal, selectDeleteColumnModalOpen } from './boardSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
+import { useDeleteColumnMutation } from 'services/api/columns';
+import { useParams } from 'react-router-dom';
 
 const style = {
   boxSizing: 'content-box',
@@ -27,6 +25,8 @@ const style = {
 export const DeleteColumnModal = () => {
   const deleteColumnModalOpen = useAppSelector(selectDeleteColumnModalOpen);
   const dispatch = useAppDispatch();
+  const [deleteColumn] = useDeleteColumnMutation();
+  const { id: boardId } = useParams();
 
   const handleClose = useCallback(() => {
     dispatch(closeDeleteColumnModal());
@@ -74,7 +74,7 @@ export const DeleteColumnModal = () => {
                 color="secondary"
                 sx={{ width: '7rem' }}
                 onClick={() => {
-                  dispatch(deleteBoardColumn());
+                  deleteColumn({ _id: deleteColumnModalOpen.columnId!, boardId: boardId! });
                   dispatch(handleClose);
                 }}
               >

@@ -1,17 +1,14 @@
 import { Button, Divider, IconButton, Paper, Stack, Badge } from '@mui/material';
-import {
-  ColumnType,
-  openDeleteColumnModal,
-  openItemModal,
-  selectBoardColumns,
-  setColumnTitle,
-} from './boardSlice';
+import { openDeleteColumnModal, openItemModal } from './boardSlice';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useAppDispatch } from 'app/hooks';
 import { Item } from './Item';
 import { ColumnTitle } from './ColumnTitle';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
+import { useUpdateColumnMutation } from 'services/api/columns';
+import { useAllTasksInColumnQuery } from 'services/api/tasks';
+import { Column } from 'types/api/columns';
 
 const paperStyles = {
   boxSizing: 'border-box',
@@ -22,13 +19,13 @@ const paperStyles = {
   flexDirection: 'column',
 };
 
-export const Column = ({ id, title, index }: ColumnType) => {
+export const BoardColumn = ({ _id, title, order, boardId }: Column) => {
   const dispatch = useAppDispatch();
-  const boardColumns = useAppSelector(selectBoardColumns);
-  const column = boardColumns.find((el) => el.id === id);
+  const [updateColumn] = useUpdateColumnMutation();
+  const { data: tasks } = useAllTasksInColumnQuery({ columnId: _id, boardId });
 
   return (
-    <Draggable draggableId={id} index={index}>
+    <Draggable draggableId={_id} index={order}>
       {(provided) => (
         <Paper sx={paperStyles} {...provided.draggableProps} ref={provided.innerRef}>
           <Stack
@@ -40,10 +37,17 @@ export const Column = ({ id, title, index }: ColumnType) => {
             <Stack direction="row" spacing={3}>
               <ColumnTitle
                 value={title}
-                onChange={(newTitle) => dispatch(setColumnTitle({ id, title: newTitle, index }))}
+                onChange={(newTitle) =>
+                  updateColumn({
+                    _id: _id,
+                    boardId,
+                    title: newTitle!,
+                    order,
+                  })
+                }
               />
               <Badge
-                badgeContent={column?.items?.length}
+                badgeContent={tasks?.length}
                 color="primary"
                 sx={{
                   top: 16,
@@ -54,7 +58,14 @@ export const Column = ({ id, title, index }: ColumnType) => {
               <IconButton
                 sx={{ p: 0, ml: 2, pt: '4px' }}
                 onClick={() => {
-                  dispatch(openDeleteColumnModal({ id, index }));
+                  dispatch(
+                    openDeleteColumnModal({
+                      _id,
+                      order,
+                      title,
+                      boardId,
+                    })
+                  );
                 }}
               >
                 <ClearOutlinedIcon
@@ -67,20 +78,22 @@ export const Column = ({ id, title, index }: ColumnType) => {
             </Stack>
           </Stack>
           <Divider variant="middle" />
-          <Droppable droppableId={id} type="task">
+          <Droppable droppableId={_id} type="task">
             {(provided) => (
               <Stack gap={1} mt={1} mb={2} ref={provided.innerRef} {...provided.droppableProps}>
-                {column!.items!.length > 0 &&
-                  column?.items?.map((item, index) => {
+                {tasks &&
+                  tasks.map((item, index) => {
                     return (
                       <Item
-                        key={item.id}
-                        id={item.id}
+                        key={item._id}
+                        id={item._id}
                         title={item.title}
                         description={item.description}
+                        order={index}
+                        boardId={boardId}
+                        columnId={_id}
                         priority={item.priority}
                         size={item.size}
-                        index={index}
                       />
                     );
                   })}
@@ -100,7 +113,14 @@ export const Column = ({ id, title, index }: ColumnType) => {
               mb: -0.5,
             }}
             onClick={() => {
-              dispatch(openItemModal({ id, index }));
+              dispatch(
+                openItemModal({
+                  _id: _id,
+                  order,
+                  title,
+                  boardId,
+                })
+              );
             }}
           >
             Add item

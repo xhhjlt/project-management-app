@@ -11,12 +11,13 @@ import {
   IconButton,
 } from '@mui/material';
 import { useCallback, useEffect } from 'react';
-import { Form } from 'react-router-dom';
+import { Form, useParams } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { addNewItem, closeItemModal, ItemType, selectItemModalOpen } from './boardSlice';
+import { closeItemModal, ItemType, selectItemModalOpen } from './boardSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { v4 as uuid } from 'uuid';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
+import { useCreateTaskMutation } from 'services/api/tasks';
+import { CurrentUserId } from 'components/signForms/authSlice';
 
 const style = {
   boxSizing: 'content-box',
@@ -43,6 +44,9 @@ export const AddItemModal = () => {
   } = useForm<ItemType>();
   const itemModalOpen = useAppSelector(selectItemModalOpen);
   const dispatch = useAppDispatch();
+  const [createItem] = useCreateTaskMutation();
+  const { id: boardId } = useParams();
+  const userId = useAppSelector(CurrentUserId);
 
   const handleClose = useCallback(() => {
     dispatch(closeItemModal());
@@ -53,12 +57,19 @@ export const AddItemModal = () => {
     handleClose();
   }, [handleClose, isSubmitSuccessful, reset]);
 
-  const onSubmit: SubmitHandler<ItemType> = (data) => {
-    const small_id = uuid().slice(0, 8);
-    data.id = small_id;
-    data.priority = { value: '', icon: '' };
-    data.size = { value: '', icon: '' };
-    dispatch(addNewItem(data));
+  const onSubmit: SubmitHandler<ItemType> = async (data) => {
+    await createItem({
+      boardId: boardId!,
+      columnId: itemModalOpen.columnId!,
+      title: data.title,
+      description: data.description || 'No description provided...',
+      userId: userId || '',
+      order: 0,
+      size: '',
+      priority: '',
+      users: [],
+    });
+    console.log(isSubmitSuccessful);
   };
 
   return (

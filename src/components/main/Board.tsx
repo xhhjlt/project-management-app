@@ -1,8 +1,8 @@
-import { Paper, Typography, Stack, Divider, Link } from '@mui/material';
+import { Paper, Typography, Stack, Divider } from '@mui/material';
 import { useDeleteBoardMutation } from 'services/api/boards';
 import { BoardMenu } from './BoardMenu';
 import { DeleteConfirmationModal } from 'components/common/DeleteConfirmationModal';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const paperStyles = {
   boxSizing: 'border-box',

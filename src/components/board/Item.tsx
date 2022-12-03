@@ -4,6 +4,20 @@ import { useAppDispatch } from 'app/hooks';
 import * as Icons from 'react-icons/fc';
 import { Draggable } from 'react-beautiful-dnd';
 
+const PRIORITY: Record<string, string> = {
+  Urgent: 'FcAlarmClock',
+  High: 'FcVlc',
+  Medium: 'FcNeutralTrading',
+  Low: 'FcLowBattery',
+};
+
+const SIZE: Record<string, string> = {
+  Large: 'FcGlobe',
+  Medium: 'FcLandscape',
+  Small: 'FcHome',
+  Tiny: 'FcCloseUpMode',
+};
+
 const paperStyles = {
   p: 1,
   cursor: 'pointer',
@@ -18,25 +32,16 @@ const getIconComponent = (icon: string) => {
   return <Component />;
 };
 
-export const Item = ({ id, title, description, priority, size, index }: ItemType) => {
+export const Item = ({ id, title, order, columnId, size, priority }: ItemType) => {
   const dispatch = useAppDispatch();
 
   return (
-    <Draggable draggableId={id} index={index}>
+    <Draggable draggableId={id} index={order}>
       {(provided) => (
         <Paper
           sx={paperStyles}
           onClick={() => {
-            dispatch(
-              openItemDescriptionModal({
-                id,
-                title,
-                description,
-                priority,
-                size,
-                index,
-              })
-            );
+            dispatch(openItemDescriptionModal({ itemId: id, columnId }));
           }}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
@@ -50,22 +55,22 @@ export const Item = ({ id, title, description, priority, size, index }: ItemType
             {title}
           </Typography>
           <Stack direction="row" spacing={1}>
-            {priority.value && (
+            {priority && (
               <Tooltip title="Priority" placement="top" followCursor arrow>
                 <Chip
-                  label={priority.value}
+                  label={priority}
                   size="small"
-                  icon={getIconComponent(priority.icon)}
+                  icon={getIconComponent(PRIORITY[priority])}
                   sx={{ backgroundColor: '#f5f5f5' }}
                 />
               </Tooltip>
             )}
-            {size.value && (
+            {size && (
               <Tooltip title="Size" placement="top" followCursor arrow>
                 <Chip
-                  label={size.value}
+                  label={size}
                   size="small"
-                  icon={getIconComponent(size.icon)}
+                  icon={getIconComponent(SIZE[size])}
                   sx={{ backgroundColor: '#f5f5f5' }}
                 />
               </Tooltip>

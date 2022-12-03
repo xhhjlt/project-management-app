@@ -5,6 +5,8 @@ export default interface Task {
   boardId: string;
   columnId: string;
   description: string;
+  size: string;
+  priority: string;
   userId: string;
   users: Array<string>;
 }

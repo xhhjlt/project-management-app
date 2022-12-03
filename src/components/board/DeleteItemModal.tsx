@@ -3,11 +3,12 @@ import { useCallback } from 'react';
 import {
   closeDeleteItemModal,
   closeItemDescriptionModal,
-  deleteBoardItem,
   selectDeleteItemModalOpen,
 } from './boardSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
+import { useDeleteTaskMutation } from 'services/api/tasks';
+import { useParams } from 'react-router-dom';
 
 const style = {
   boxSizing: 'content-box',
@@ -28,6 +29,8 @@ const style = {
 export const DeleteItemModal = () => {
   const deleteItemModalOpen = useAppSelector(selectDeleteItemModalOpen);
   const dispatch = useAppDispatch();
+  const [deleteItem] = useDeleteTaskMutation();
+  const { id: boardId } = useParams();
 
   const handleClose = useCallback(() => {
     dispatch(closeDeleteItemModal());
@@ -75,7 +78,11 @@ export const DeleteItemModal = () => {
                 color="secondary"
                 sx={{ width: '7rem' }}
                 onClick={() => {
-                  dispatch(deleteBoardItem());
+                  deleteItem({
+                    _id: deleteItemModalOpen.itemId!,
+                    columnId: deleteItemModalOpen.columnId!,
+                    boardId: boardId!,
+                  });
                   dispatch(handleClose);
                   dispatch(closeItemDescriptionModal());
                 }}

@@ -11,12 +11,13 @@ import {
   IconButton,
 } from '@mui/material';
 import { useCallback, useEffect } from 'react';
-import { Form } from 'react-router-dom';
+import { Form, useParams } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { addBoardColumn, closeColumnModal, ColumnType, selectColumnModalOpen } from './boardSlice';
+import { closeColumnModal, selectColumnModalOpen } from './boardSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { v4 as uuid } from 'uuid';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
+import { Column } from 'types/api/columns';
+import { useCreateColumnMutation } from 'services/api/columns';
 
 const style = {
   boxSizing: 'content-box',
@@ -40,9 +41,11 @@ export const ColumnModal = () => {
     handleSubmit,
     reset,
     formState: { errors, isSubmitSuccessful },
-  } = useForm<ColumnType>();
+  } = useForm<Column>();
   const columnModalOpen = useAppSelector(selectColumnModalOpen);
   const dispatch = useAppDispatch();
+  const [createColumn] = useCreateColumnMutation();
+  const { id: boardId } = useParams();
 
   const handleClose = useCallback(() => {
     dispatch(closeColumnModal());
@@ -53,11 +56,12 @@ export const ColumnModal = () => {
     handleClose();
   }, [handleClose, isSubmitSuccessful, reset]);
 
-  const onSubmit: SubmitHandler<ColumnType> = (data) => {
-    const small_id = uuid().slice(0, 8);
-    data.id = small_id;
-    data.items = [];
-    dispatch(addBoardColumn(data));
+  const onSubmit: SubmitHandler<Column> = (data) => {
+    createColumn({
+      boardId: boardId!,
+      title: data.title,
+      order: 0,
+    });
   };
 
   return (
