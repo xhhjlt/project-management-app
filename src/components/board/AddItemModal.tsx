@@ -13,11 +13,12 @@ import {
 import { useCallback, useEffect } from 'react';
 import { Form, useParams } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { closeItemModal, ItemType, selectItemModalOpen } from './boardSlice';
+import { closeItemModal, selectItemModalOpen } from './boardSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { useCreateTaskMutation } from 'services/api/tasks';
 import { CurrentUserId } from 'components/signForms/authSlice';
+import Task from 'types/api/tasks';
 
 const style = {
   boxSizing: 'content-box',
@@ -41,7 +42,7 @@ export const AddItemModal = () => {
     handleSubmit,
     reset,
     formState: { errors, isSubmitSuccessful },
-  } = useForm<ItemType>();
+  } = useForm<Task>();
   const itemModalOpen = useAppSelector(selectItemModalOpen);
   const dispatch = useAppDispatch();
   const [createItem] = useCreateTaskMutation();
@@ -57,7 +58,7 @@ export const AddItemModal = () => {
     handleClose();
   }, [handleClose, isSubmitSuccessful, reset]);
 
-  const onSubmit: SubmitHandler<ItemType> = async (data) => {
+  const onSubmit: SubmitHandler<Task> = async (data) => {
     await createItem({
       boardId: boardId!,
       columnId: itemModalOpen.columnId!,
@@ -69,7 +70,6 @@ export const AddItemModal = () => {
       priority: '',
       users: [],
     });
-    console.log(isSubmitSuccessful);
   };
 
   return (

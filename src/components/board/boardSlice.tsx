@@ -7,33 +7,6 @@ export type DeleteColumnType = {
   columnId: string | null;
 };
 
-export type ItemType = {
-  id: string;
-  title: string;
-  description: string;
-  priority: string;
-  size: string;
-  order: number;
-  boardId: string;
-  columnId: string;
-};
-
-export type DeleteItemPayloadOnDrag = {
-  draggableId: string;
-  srcColumnId: string;
-};
-
-export type AddItemPayloadOnDrop = {
-  draggableItem: ItemType;
-  destColumnId: string;
-  destinationIndex: number;
-};
-
-export type AddColumnPayloadOnDrop = {
-  draggableColumn: Column;
-  destinationIndex: number;
-};
-
 export type CreateItemModalType = {
   isOpen: boolean;
   columnId: string | null;

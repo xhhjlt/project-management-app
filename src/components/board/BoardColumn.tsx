@@ -7,8 +7,7 @@ import { Item } from './Item';
 import { ColumnTitle } from './ColumnTitle';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { useUpdateColumnMutation } from 'services/api/columns';
-import { useAllTasksInColumnQuery } from 'services/api/tasks';
-import { Column } from 'types/api/columns';
+import { ColumnWithTasks } from './TasksGrid';
 
 const paperStyles = {
   boxSizing: 'border-box',
@@ -19,10 +18,11 @@ const paperStyles = {
   flexDirection: 'column',
 };
 
-export const BoardColumn = ({ _id, title, order, boardId }: Column) => {
+export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTasks) => {
   const dispatch = useAppDispatch();
   const [updateColumn] = useUpdateColumnMutation();
-  const { data: tasks } = useAllTasksInColumnQuery({ columnId: _id, boardId });
+  //const { data: tasks } = useAllTasksInColumnQuery({ columnId: _id, boardId });
+  //const copyOfTasks = structuredClone(tasks);
 
   return (
     <Draggable draggableId={_id} index={order}>
@@ -82,21 +82,25 @@ export const BoardColumn = ({ _id, title, order, boardId }: Column) => {
             {(provided) => (
               <Stack gap={1} mt={1} mb={2} ref={provided.innerRef} {...provided.droppableProps}>
                 {tasks &&
-                  tasks.map((item, index) => {
-                    return (
-                      <Item
-                        key={item._id}
-                        id={item._id}
-                        title={item.title}
-                        description={item.description}
-                        order={index}
-                        boardId={boardId}
-                        columnId={_id}
-                        priority={item.priority}
-                        size={item.size}
-                      />
-                    );
-                  })}
+                  tasks
+                    .sort((a, b) => a.order - b.order)
+                    .map((item, index) => {
+                      return (
+                        <Item
+                          key={item._id}
+                          _id={item._id}
+                          title={item.title}
+                          description={item.description}
+                          order={index}
+                          boardId={boardId}
+                          columnId={_id}
+                          priority={item.priority}
+                          size={item.size}
+                          userId={''}
+                          users={[]}
+                        />
+                      );
+                    })}
                 {provided.placeholder}
               </Stack>
             )}

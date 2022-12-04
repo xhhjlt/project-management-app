@@ -1,8 +1,9 @@
-import { ItemType, openItemDescriptionModal } from './boardSlice';
+import { openItemDescriptionModal } from './boardSlice';
 import { Paper, Typography, Chip, Stack, Tooltip } from '@mui/material';
 import { useAppDispatch } from 'app/hooks';
 import * as Icons from 'react-icons/fc';
 import { Draggable } from 'react-beautiful-dnd';
+import Task from 'types/api/tasks';
 
 const PRIORITY: Record<string, string> = {
   Urgent: 'FcAlarmClock',
@@ -32,16 +33,16 @@ const getIconComponent = (icon: string) => {
   return <Component />;
 };
 
-export const Item = ({ id, title, order, columnId, size, priority }: ItemType) => {
+export const Item = ({ _id, title, order, columnId, size, priority }: Task) => {
   const dispatch = useAppDispatch();
 
   return (
-    <Draggable draggableId={id} index={order}>
+    <Draggable draggableId={_id} index={order}>
       {(provided) => (
         <Paper
           sx={paperStyles}
           onClick={() => {
-            dispatch(openItemDescriptionModal({ itemId: id, columnId }));
+            dispatch(openItemDescriptionModal({ itemId: _id, columnId }));
           }}
           {...provided.draggableProps}
           {...provided.dragHandleProps}

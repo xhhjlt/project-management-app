@@ -17,7 +17,6 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   closeItemDescriptionModal,
-  ItemType,
   openDeleteItemModal,
   selectItemDescriptionModalOpen,
 } from './boardSlice';
@@ -37,6 +36,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Form, useParams } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useTaskByIdQuery, useUpdateTaskMutation } from 'services/api/tasks';
+import Task from 'types/api/tasks';
 
 const style = {
   boxSizing: 'border-box',
@@ -95,7 +95,7 @@ export const ItemDescriptionModal = () => {
     reset,
     watch,
     formState: { errors },
-  } = useForm<ItemType>();
+  } = useForm<Task>();
   const dispatch = useAppDispatch();
   const containerRef = useRef(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
@@ -169,7 +169,7 @@ export const ItemDescriptionModal = () => {
     }
   }, [titleIsEditing]);
 
-  const onSubmit: SubmitHandler<ItemType> = (data) => {
+  const onSubmit: SubmitHandler<Task> = (data) => {
     updateItem({
       _id: itemDescriptionModalOpen.itemId!,
       boardId: boardId!,
