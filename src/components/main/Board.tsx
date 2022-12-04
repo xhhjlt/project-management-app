@@ -62,7 +62,7 @@ export const Board = ({ id, title, description }: BoardType) => {
         </Stack>
       </Stack>
       <DeleteConfirmationModal
-        text={{ title: 'board', body: 'board' }}
+        text={{ titleEn: 'board', titleRus: 'доску', bodyEn: 'board', bodyRus: 'эту доску' }}
         onDelete={deleteBoard}
         id={id}
       />

@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { useDeleteColumnMutation } from 'services/api/columns';
 import { useParams } from 'react-router-dom';
+import { currentLanguage } from 'components/header/langSlice';
 
 const style = {
   boxSizing: 'content-box',
@@ -27,6 +28,7 @@ export const DeleteColumnModal = () => {
   const dispatch = useAppDispatch();
   const [deleteColumn] = useDeleteColumnMutation();
   const { id: boardId } = useParams();
+  const language = useAppSelector(currentLanguage);
 
   const handleClose = useCallback(() => {
     dispatch(closeDeleteColumnModal());
@@ -57,9 +59,13 @@ export const DeleteColumnModal = () => {
               />
             </IconButton>
             <Typography variant="h6" component="h2" sx={{ textAlign: 'center' }}>
-              DELETE COLUMN?
+              {language === 'EN' ? 'DELETE COLUMN' : 'УДАЛИТЬ КОЛОНКУ'}
             </Typography>
-            <Typography>This will delete column and all the tasks in it.</Typography>
+            <Typography>
+              {language === 'EN'
+                ? 'Are you sure you want to delete this column and all the tasks in it?'
+                : 'Вы уверенны, что хотите удалить эту колонку и все задачи в ней?'}
+            </Typography>
             <Stack direction="row" justifyContent="space-evenly">
               <Button
                 variant="contained"
@@ -67,7 +73,7 @@ export const DeleteColumnModal = () => {
                 sx={{ width: '7rem' }}
                 onClick={handleClose}
               >
-                Cancel
+                {language === 'EN' ? 'Cancel' : 'Отмена'}
               </Button>
               <Button
                 variant="contained"
@@ -78,7 +84,7 @@ export const DeleteColumnModal = () => {
                   dispatch(handleClose);
                 }}
               >
-                Delete
+                {language === 'EN' ? 'Delete' : 'Удалить'}
               </Button>
             </Stack>
           </Box>

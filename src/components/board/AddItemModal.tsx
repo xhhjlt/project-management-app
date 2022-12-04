@@ -19,6 +19,7 @@ import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { useCreateTaskMutation } from 'services/api/tasks';
 import { CurrentUserId } from 'components/signForms/authSlice';
 import Task from 'types/api/tasks';
+import { currentLanguage } from 'components/header/langSlice';
 
 const style = {
   boxSizing: 'content-box',
@@ -48,6 +49,7 @@ export const AddItemModal = () => {
   const [createItem] = useCreateTaskMutation();
   const { id: boardId } = useParams();
   const userId = useAppSelector(CurrentUserId);
+  const language = useAppSelector(currentLanguage);
 
   const handleClose = useCallback(() => {
     dispatch(closeItemModal());
@@ -98,23 +100,28 @@ export const AddItemModal = () => {
                 />
               </IconButton>
               <Typography variant="h6" component="h2" sx={{ textAlign: 'center' }}>
-                ADD ITEM
+                {language === 'EN' ? 'ADD ITEM' : 'ДОБАВИТЬ ЗАДАЧУ'}
               </Typography>
               <Stack spacing={2}>
                 <FormControl>
                   <TextField
-                    label="Enter item title"
+                    label={language === 'EN' ? 'Enter item title' : 'Введите название задачи'}
                     defaultValue=""
                     variant="outlined"
                     sx={{ width: '100%' }}
                     autoComplete="off"
                     {...register('title', { required: true })}
                     error={errors.title ? true : false}
-                    helperText={errors.title && 'You should provide a title'}
+                    helperText={
+                      errors.title &&
+                      (language === 'EN'
+                        ? 'You should provide a title'
+                        : 'Вам нужно ввести название задачи')
+                    }
                   />
                 </FormControl>
                 <TextField
-                  label="Enter item description"
+                  label={language === 'EN' ? 'Enter item description' : 'Введите описание задачи'}
                   defaultValue=""
                   variant="outlined"
                   sx={{ width: '100%' }}
@@ -131,10 +138,10 @@ export const AddItemModal = () => {
                   sx={{ width: '7rem' }}
                   onClick={handleClose}
                 >
-                  Cancel
+                  {language === 'EN' ? 'Cancel' : 'Отмена'}
                 </Button>
                 <Button variant="contained" component="label" sx={{ width: '7rem' }}>
-                  Add
+                  {language === 'EN' ? 'Add' : 'Добавить'}
                   <input type="submit" hidden />
                 </Button>
               </Stack>

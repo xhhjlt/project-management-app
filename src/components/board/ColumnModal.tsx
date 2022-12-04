@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { Column } from 'types/api/columns';
 import { useCreateColumnMutation } from 'services/api/columns';
+import { currentLanguage } from 'components/header/langSlice';
 
 const style = {
   boxSizing: 'content-box',
@@ -46,6 +47,7 @@ export const ColumnModal = () => {
   const dispatch = useAppDispatch();
   const [createColumn] = useCreateColumnMutation();
   const { id: boardId } = useParams();
+  const language = useAppSelector(currentLanguage);
 
   const handleClose = useCallback(() => {
     dispatch(closeColumnModal());
@@ -90,18 +92,23 @@ export const ColumnModal = () => {
                 />
               </IconButton>
               <Typography variant="h6" component="h2" sx={{ textAlign: 'center' }}>
-                ADD COLUMN
+                {language === 'EN' ? 'ADD COLUMN' : 'ДОБАВИТЬ КОЛОНКУ'}
               </Typography>
               <FormControl>
                 <TextField
-                  label="Enter column title"
+                  label={language === 'EN' ? 'Enter column title' : 'Введите название колонки'}
                   defaultValue=""
                   variant="outlined"
                   sx={{ width: '100%' }}
                   autoComplete="off"
                   {...register('title', { required: true })}
                   error={errors.title ? true : false}
-                  helperText={errors.title && 'You should provide column title'}
+                  helperText={
+                    errors.title &&
+                    (language === 'EN'
+                      ? 'You should provide column title'
+                      : 'Вам нужно ввести название колонки')
+                  }
                 />
               </FormControl>
               <Stack direction="row" justifyContent="space-evenly">
@@ -111,10 +118,10 @@ export const ColumnModal = () => {
                   sx={{ width: '7rem' }}
                   onClick={handleClose}
                 >
-                  Cancel
+                  {language === 'EN' ? 'Cancel' : 'Отмена'}
                 </Button>
                 <Button variant="contained" component="label" sx={{ width: '7rem' }}>
-                  Add
+                  {language === 'EN' ? 'Add' : 'Добавить'}
                   <input type="submit" hidden />
                 </Button>
               </Stack>

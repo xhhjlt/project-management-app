@@ -37,6 +37,7 @@ import { Form, useParams } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useTaskByIdQuery, useUpdateTaskMutation } from 'services/api/tasks';
 import Task from 'types/api/tasks';
+import { currentLanguage } from 'components/header/langSlice';
 
 const style = {
   boxSizing: 'border-box',
@@ -111,6 +112,7 @@ export const ItemDescriptionModal = () => {
     { skip: !(boardId && itemDescriptionModalOpen.columnId && itemDescriptionModalOpen.itemId) }
   );
   const [updateItem] = useUpdateTaskMutation();
+  const language = useAppSelector(currentLanguage);
 
   const title = watch('title');
   const description = watch('description');
@@ -120,12 +122,20 @@ export const ItemDescriptionModal = () => {
       return description;
     }
     if (item!.description === 'No description provided...') {
-      return <span style={{ color: '#616161' }}>No description provided..</span>;
+      return (
+        <span style={{ color: '#616161' }}>
+          {language === 'EN' ? 'No description provided...' : 'Описание отсутствует...'}
+        </span>
+      );
     }
     if (item!.description && description === undefined) {
       return item!.description;
     }
-    return <span style={{ color: '#616161' }}>No description provided..</span>;
+    return (
+      <span style={{ color: '#616161' }}>
+        {language === 'EN' ? 'No description provided...' : 'Описание отсутствует...'}
+      </span>
+    );
   };
 
   const handleClose = useCallback(() => {
@@ -137,7 +147,6 @@ export const ItemDescriptionModal = () => {
     if (itemDescriptionModalOpen.isOpen && item) {
       reset({
         title: item!.title,
-        //description: item!.description,
       });
     }
   }, [itemDescriptionModalOpen.isOpen, item]);
@@ -298,7 +307,9 @@ export const ItemDescriptionModal = () => {
                     <Stack spacing={3}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl size="small" fullWidth>
-                          <InputLabel id="priority-select-label">Priority</InputLabel>
+                          <InputLabel id="priority-select-label">
+                            {language === 'EN' ? 'Priority' : 'Приоритет'}
+                          </InputLabel>
                           <Select
                             labelId="priority-select-label"
                             id="priority-select"
@@ -309,36 +320,40 @@ export const ItemDescriptionModal = () => {
                             <MenuItem value="Urgent">
                               <Stack direction="row" spacing={1} alignItems="center">
                                 <FcAlarmClock />
-                                <Typography>Urgent</Typography>
+                                <Typography>
+                                  {language === 'EN' ? 'Urgent' : 'Критичный'}
+                                </Typography>
                               </Stack>
                             </MenuItem>
                             <MenuItem value="High">
                               <Stack direction="row" spacing={1} alignItems="center">
                                 <FcVlc />
-                                <Typography>High</Typography>
+                                <Typography>{language === 'EN' ? 'High' : 'Высокий'}</Typography>
                               </Stack>
                             </MenuItem>
                             <MenuItem value="Medium">
                               <Stack direction="row" spacing={1} alignItems="center">
                                 <FcNeutralTrading />
-                                <Typography>Meddium</Typography>
+                                <Typography>{language === 'EN' ? 'Meddium' : 'Средний'}</Typography>
                               </Stack>
                             </MenuItem>
                             <MenuItem value="Low">
                               <Stack direction="row" spacing={1} alignItems="center">
                                 <FcLowBattery />
-                                <Typography>Low</Typography>
+                                <Typography>{language === 'EN' ? 'Low' : 'Низкий'}</Typography>
                               </Stack>
                             </MenuItem>
                             <MenuItem value="">
-                              <em>None</em>
+                              <em>{language === 'EN' ? 'None' : 'Не выбран'}</em>
                             </MenuItem>
                           </Select>
                         </FormControl>
                       </Box>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl size="small" fullWidth>
-                          <InputLabel id="size-select-label">Size</InputLabel>
+                          <InputLabel id="size-select-label">
+                            {language === 'EN' ? 'Size' : 'Размер'}
+                          </InputLabel>
                           <Select
                             labelId="size-select-label"
                             id="size-select"
@@ -346,32 +361,34 @@ export const ItemDescriptionModal = () => {
                             label="Size"
                             {...register('size')}
                           >
-                            <MenuItem value="Large">
+                            <MenuItem value="Xlarge">
                               <Stack direction="row" spacing={1} alignItems="center">
                                 <FcGlobe />
-                                <Typography>Large</Typography>
+                                <Typography>
+                                  {language === 'EN' ? 'Х-Large' : 'Огромная'}
+                                </Typography>
+                              </Stack>
+                            </MenuItem>
+                            <MenuItem value="Large">
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <FcLandscape />
+                                <Typography>{language === 'EN' ? 'Large' : 'Большая'}</Typography>
                               </Stack>
                             </MenuItem>
                             <MenuItem value="Medium">
                               <Stack direction="row" spacing={1} alignItems="center">
-                                <FcLandscape />
-                                <Typography>Medium</Typography>
+                                <FcHome />
+                                <Typography>{language === 'EN' ? 'Medium' : 'Средняя'}</Typography>
                               </Stack>
                             </MenuItem>
                             <MenuItem value="Small">
                               <Stack direction="row" spacing={1} alignItems="center">
-                                <FcHome />
-                                <Typography>Small</Typography>
-                              </Stack>
-                            </MenuItem>
-                            <MenuItem value="Tiny">
-                              <Stack direction="row" spacing={1} alignItems="center">
                                 <FcCloseUpMode />
-                                <Typography>Tiny</Typography>
+                                <Typography>{language === 'EN' ? 'Small' : 'Маленькая'}</Typography>
                               </Stack>
                             </MenuItem>
                             <MenuItem value="">
-                              <em>None</em>
+                              <em>{language === 'EN' ? 'None' : 'Не выбран'}</em>
                             </MenuItem>
                           </Select>
                         </FormControl>
@@ -388,13 +405,13 @@ export const ItemDescriptionModal = () => {
                           );
                         }}
                       >
-                        Delete item
+                        {language === 'EN' ? 'Delete item' : 'Удалить'}
                       </Button>
                       <Button variant="contained" color="neutral" onClick={handleClose}>
-                        Cancel
+                        {language === 'EN' ? 'Cancel' : 'Отмена'}
                       </Button>
                       <Button variant="contained" component="label">
-                        Save
+                        {language === 'EN' ? 'Save' : 'Сохранить'}
                         <input type="submit" hidden />
                       </Button>
                     </Stack>

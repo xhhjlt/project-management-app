@@ -2,12 +2,13 @@ import { Button, Divider, IconButton, Paper, Stack, Badge } from '@mui/material'
 import { openDeleteColumnModal, openItemModal } from './boardSlice';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
-import { useAppDispatch } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Item } from './Item';
 import { ColumnTitle } from './ColumnTitle';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { useUpdateColumnMutation } from 'services/api/columns';
 import { ColumnWithTasks } from './TasksGrid';
+import { currentLanguage } from 'components/header/langSlice';
 
 const paperStyles = {
   boxSizing: 'border-box',
@@ -21,8 +22,7 @@ const paperStyles = {
 export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTasks) => {
   const dispatch = useAppDispatch();
   const [updateColumn] = useUpdateColumnMutation();
-  //const { data: tasks } = useAllTasksInColumnQuery({ columnId: _id, boardId });
-  //const copyOfTasks = structuredClone(tasks);
+  const language = useAppSelector(currentLanguage);
 
   return (
     <Draggable draggableId={_id} index={order}>
@@ -127,7 +127,7 @@ export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTas
               );
             }}
           >
-            Add item
+            {language === 'EN' ? 'Add item' : 'Добавить задачу'}
           </Button>
         </Paper>
       )}

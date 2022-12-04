@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { closeDeleteConfirmationModal, selectDeleteConfirmationModalOpen } from './commonSlice';
+import { currentLanguage } from 'components/header/langSlice';
 
 const style = {
   boxSizing: 'content-box',
@@ -22,8 +23,10 @@ const style = {
 
 export type DeleteConfirmationModalParams = {
   text: {
-    title: string;
-    body: string;
+    titleEn: string;
+    titleRus: string;
+    bodyEn: string;
+    bodyRus: string;
   };
   onDelete: (id: string) => void;
   id: string;
@@ -32,6 +35,7 @@ export type DeleteConfirmationModalParams = {
 export const DeleteConfirmationModal = ({ text, onDelete, id }: DeleteConfirmationModalParams) => {
   const deleteConfirmationModalOpen = id === useAppSelector(selectDeleteConfirmationModalOpen);
   const dispatch = useAppDispatch();
+  const language = useAppSelector(currentLanguage);
 
   const handleClose = useCallback(() => {
     dispatch(closeDeleteConfirmationModal());
@@ -62,12 +66,18 @@ export const DeleteConfirmationModal = ({ text, onDelete, id }: DeleteConfirmati
               />
             </IconButton>
             <Typography variant="h6" component="h2" sx={{ textAlign: 'center' }}>
-              DELETE {text.title.toUpperCase()}?
+              {language === 'EN' ? 'DELETE ' : 'УДАЛИТЬ '}
+              {language === 'EN' ? text.titleEn.toUpperCase() : text.titleRus.toUpperCase()}
             </Typography>
-            <Typography>Are you sure you want to delete this {text.body}?</Typography>
+            <Typography>
+              {language === 'EN'
+                ? 'Are you sure you want to delete this '
+                : 'Вы уверенны, что хотите удалить '}
+              {language === 'EN' ? text.bodyEn : text.bodyRus}?
+            </Typography>
             <Stack direction="row" justifyContent="space-evenly">
               <Button variant="contained" sx={{ width: '7rem' }} onClick={handleClose} color="info">
-                Cancel
+                {language === 'EN' ? 'Cancel' : 'Отмена'}
               </Button>
               <Button
                 variant="contained"
@@ -78,7 +88,7 @@ export const DeleteConfirmationModal = ({ text, onDelete, id }: DeleteConfirmati
                   dispatch(handleClose);
                 }}
               >
-                Delete
+                {language === 'EN' ? 'Delete' : 'Удалить'}
               </Button>
             </Stack>
           </Box>

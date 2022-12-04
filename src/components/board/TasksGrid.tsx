@@ -1,7 +1,7 @@
 import { Button, Stack } from '@mui/material';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { ColumnModal } from './ColumnModal';
-import { useAppDispatch } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { openColumnModal } from './boardSlice';
 import { DeleteColumnModal } from './DeleteColumnModal';
 import { AddItemModal } from './AddItemModal';
@@ -14,6 +14,7 @@ import { BoardColumn } from './BoardColumn';
 import { useEffect, useState } from 'react';
 import { useTasksSetByBoardIdQuery, useTasksSetUpdateOrderMutation } from 'services/api/tasks';
 import Task from 'types/api/tasks';
+import { currentLanguage } from 'components/header/langSlice';
 
 export type ColumnWithTasks = {
   _id: string;
@@ -27,12 +28,8 @@ export const TasksGrid = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
   const { data: columnsOnBoard } = useAllColumnsInBoardQuery(id as string);
-  //const [copyOfData, setCopyOfData] = useState(structuredClone(columnsOnBoard));
   const [columnsWithTasks, setColumnsWithTasks] = useState<Array<ColumnWithTasks>>();
-
-  // useEffect(() => {
-  //   setCopyOfData(structuredClone(columnsOnBoard));
-  // }, [columnsOnBoard]);
+  const language = useAppSelector(currentLanguage);
 
   const [updateOrder] = useColumnsSetUpdateOrderMutation();
   const { data: tasksOnBoard } = useTasksSetByBoardIdQuery(id as string);
@@ -184,7 +181,11 @@ export const TasksGrid = () => {
           dispatch(openColumnModal());
         }}
       >
-        {columnsOnBoard?.length === 0 ? <span>Add column</span> : <AddRoundedIcon />}
+        {columnsOnBoard?.length === 0 ? (
+          <span>{language === 'EN' ? 'Add column' : 'Добавить колонку'}</span>
+        ) : (
+          <AddRoundedIcon />
+        )}
       </Button>
       <ColumnModal />
       <DeleteColumnModal />

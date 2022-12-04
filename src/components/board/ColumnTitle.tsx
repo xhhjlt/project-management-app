@@ -1,4 +1,6 @@
 import { Stack, Typography, Button } from '@mui/material';
+import { useAppSelector } from 'app/hooks';
+import { currentLanguage } from 'components/header/langSlice';
 import { useState, useRef } from 'react';
 
 const titleStyles = {
@@ -22,6 +24,7 @@ type ColumnTitleProps = {
 export const ColumnTitle = ({ value, onChange }: ColumnTitleProps) => {
   const [isTitleEditing, setIsTitleEditing] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
+  const language = useAppSelector(currentLanguage);
 
   const handleTitleInput = () => {
     setIsTitleEditing(true);
@@ -60,10 +63,10 @@ export const ColumnTitle = ({ value, onChange }: ColumnTitleProps) => {
             onClick={handleSave}
             onMouseDown={(event) => event.preventDefault()}
           >
-            Save
+            {language === 'EN' ? 'Save' : 'Сохранить'}
           </Button>
           <Button size="small" color="neutral" variant="contained" onClick={handleFocusLoose}>
-            Cancel
+            {language === 'EN' ? 'Cancel' : 'Отмена'}
           </Button>
         </Stack>
       )}

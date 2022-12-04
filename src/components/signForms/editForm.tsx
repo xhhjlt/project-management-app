@@ -115,7 +115,12 @@ export default function EditProfileForm() {
         </Box>
       </Box>
       <DeleteConfirmationModal
-        text={{ title: 'user', body: 'user' }}
+        text={{
+          titleEn: 'user',
+          titleRus: 'пользователя',
+          bodyEn: 'user',
+          bodyRus: 'этого пользователя',
+        }}
         onDelete={(id) => {
           deleteUser(id).then(() => dispatch(clearUser()));
         }}

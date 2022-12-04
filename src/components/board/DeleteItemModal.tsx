@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { useDeleteTaskMutation } from 'services/api/tasks';
 import { useParams } from 'react-router-dom';
+import { currentLanguage } from 'components/header/langSlice';
 
 const style = {
   boxSizing: 'content-box',
@@ -31,6 +32,7 @@ export const DeleteItemModal = () => {
   const dispatch = useAppDispatch();
   const [deleteItem] = useDeleteTaskMutation();
   const { id: boardId } = useParams();
+  const language = useAppSelector(currentLanguage);
 
   const handleClose = useCallback(() => {
     dispatch(closeDeleteItemModal());
@@ -61,9 +63,13 @@ export const DeleteItemModal = () => {
               />
             </IconButton>
             <Typography variant="h6" component="h2" sx={{ textAlign: 'center' }}>
-              DELETE ITEM?
+              {language === 'EN' ? 'DELETE ITEM' : 'УДАЛИТЬ ЗАДАЧУ'}
             </Typography>
-            <Typography>Are you sure you want to delete this item from this board?</Typography>
+            <Typography>
+              {language === 'EN'
+                ? 'Are you sure you want to delete this item from this board?'
+                : 'Вы уверенны, что хотите удалить эту задачу с текущей доски?'}
+            </Typography>
             <Stack direction="row" justifyContent="space-evenly">
               <Button
                 variant="contained"
@@ -71,7 +77,7 @@ export const DeleteItemModal = () => {
                 sx={{ width: '7rem' }}
                 onClick={handleClose}
               >
-                Cancel
+                {language === 'EN' ? 'Cancel' : 'Отмена'}
               </Button>
               <Button
                 variant="contained"
@@ -87,7 +93,7 @@ export const DeleteItemModal = () => {
                   dispatch(closeItemDescriptionModal());
                 }}
               >
-                Delete
+                {language === 'EN' ? 'Delete' : 'Удалить'}
               </Button>
             </Stack>
           </Box>
