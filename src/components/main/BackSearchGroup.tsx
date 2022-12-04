@@ -3,6 +3,8 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import { alpha, styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link as RouterLink } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { searchBoard, setSearchBoard } from './mainSlice';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -55,6 +57,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export const BackSearchGroup = () => {
+  const searchValue = useAppSelector(searchBoard);
+  const dispatch = useAppDispatch();
+
   return (
     <Stack direction="row" spacing={2}>
       <Link component={RouterLink} to="/">
@@ -66,7 +71,13 @@ export const BackSearchGroup = () => {
         <SearchIconWrapper>
           <SearchIcon />
         </SearchIconWrapper>
-        <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+        <StyledInputBase
+          type="text"
+          value={searchValue}
+          onChange={(e) => dispatch(setSearchBoard(e.target.value))}
+          placeholder="Search…"
+          inputProps={{ 'aria-label': 'search' }}
+        />
       </Search>
     </Stack>
   );
