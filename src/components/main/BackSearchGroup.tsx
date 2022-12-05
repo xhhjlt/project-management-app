@@ -14,6 +14,7 @@ const Search = styled('div')(({ theme }) => ({
   '&:hover': {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
+  color: 'CaptionText',
   marginRight: theme.spacing(2),
   marginLeft: 0,
   width: '100%',
@@ -37,7 +38,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.grey[900],
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 0, 1, 1),
     paddingRight: `calc(1em + ${theme.spacing(4)})`,

@@ -1,4 +1,4 @@
-import { Paper, Typography, Stack, Divider } from '@mui/material';
+import { Paper, Typography, Stack, Divider, useTheme } from '@mui/material';
 import { useDeleteBoardMutation } from 'services/api/boards';
 import { BoardMenu } from './BoardMenu';
 import { DeleteConfirmationModal } from 'components/common/DeleteConfirmationModal';
@@ -10,7 +10,6 @@ const paperStyles = {
   width: 300,
   height: 150,
   p: '12px',
-  backgroundColor: '#dcedc8',
   display: 'flex',
   flexDirection: 'column',
   cursor: 'pointer',
@@ -18,13 +17,11 @@ const paperStyles = {
 
 const titleStyles = {
   fontWeight: 600,
-  color: '#212121',
   wordBreak: 'break-word',
 };
 
 const descriptionStyles = {
   maxHeight: '80px',
-  color: '#424242',
   wordBreak: 'break-word',
   overflow: 'auto',
 };
@@ -36,6 +33,7 @@ export type BoardType = {
 };
 
 export const Board = ({ id, title, description }: BoardType) => {
+  const theme = useTheme();
   const [deleteBoard] = useDeleteBoardMutation();
   const navigate = useNavigate();
 
@@ -46,7 +44,13 @@ export const Board = ({ id, title, description }: BoardType) => {
   };
 
   return (
-    <Paper sx={paperStyles}>
+    <Paper
+      elevation={10}
+      sx={{
+        ...paperStyles,
+        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[900] : '#dcedc8',
+      }}
+    >
       <Stack spacing={1} onClick={handleClick}>
         <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
           <Typography variant="h6" sx={titleStyles}>
