@@ -43,7 +43,7 @@ const style = {
 
 export type FormBoardType = {
   title: string;
-  description?: string;
+  description: string;
 };
 
 export const BoardModal = ({ boardId = '' }) => {
@@ -92,9 +92,10 @@ export const BoardModal = ({ boardId = '' }) => {
         title: data.title,
         owner: userId || '',
         users: [],
-        description: data.description || '',
+        description: data.description,
       };
-      await createBoard(board);
+      const aaa = await createBoard(board);
+      console.log(aaa);
     }
     if (modalType === 'edit') {
       const board = {
@@ -102,7 +103,7 @@ export const BoardModal = ({ boardId = '' }) => {
         title: data.title,
         owner: boardData?.owner || userId || '',
         users: boardData?.users || [],
-        description: data.description || '',
+        description: data.description,
       };
       await updateBoard(board);
     }
@@ -111,7 +112,7 @@ export const BoardModal = ({ boardId = '' }) => {
         title: data.title,
         owner: userId || boardData?.owner || '',
         users: boardData?.users || [],
-        description: data.description || '',
+        description: data.description,
       };
       await createBoard(board);
     }
@@ -175,7 +176,14 @@ export const BoardModal = ({ boardId = '' }) => {
                   variant="outlined"
                   sx={{ width: '100%' }}
                   autoComplete="off"
-                  {...register('description')}
+                  {...register('description', { required: true })}
+                  error={errors.description ? true : false}
+                  helperText={
+                    errors.description &&
+                    (language === 'EN'
+                      ? 'You should provide a description'
+                      : 'Вам нужно ввести описание')
+                  }
                   multiline
                   rows={5}
                 />
