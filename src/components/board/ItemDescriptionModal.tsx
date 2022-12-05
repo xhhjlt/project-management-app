@@ -325,7 +325,7 @@ export const ItemDescriptionModal = () => {
                           <Select
                             labelId="priority-select-label"
                             id="priority-select"
-                            value={priority}
+                            value={priority ? priority : item.priority}
                             label="Priority"
                             {...register('priority')}
                           >
@@ -369,7 +369,7 @@ export const ItemDescriptionModal = () => {
                           <Select
                             labelId="size-select-label"
                             id="size-select"
-                            value={size}
+                            value={size ? size : item.size}
                             label="Size"
                             {...register('size')}
                           >
