@@ -12,7 +12,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useCallback, useEffect } from 'react';
-import { Form } from 'react-router-dom';
+import { Form, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
@@ -24,6 +24,7 @@ import {
   useUpdateBoardMutation,
 } from 'services/api/boards';
 import { closeBoardModal, selectBoardModalOpen, selectBoardModalType } from './mainSlice';
+import { AppRoutes } from 'types/routes';
 
 const style = {
   boxSizing: 'content-box',
@@ -54,6 +55,7 @@ export const BoardModal = ({ boardId = '' }) => {
     reset,
     formState: { errors, isSubmitSuccessful },
   } = useForm<FormBoardType>();
+  const navigate = useNavigate();
   const open = boardId === useAppSelector(selectBoardModalOpen);
   const modalType = useAppSelector(selectBoardModalType);
   const language = useAppSelector(currentLanguage);
@@ -94,8 +96,8 @@ export const BoardModal = ({ boardId = '' }) => {
         users: [],
         description: data.description,
       };
-      const aaa = await createBoard(board);
-      console.log(aaa);
+      await createBoard(board);
+      navigate(AppRoutes.Main);
     }
     if (modalType === 'edit') {
       const board = {
