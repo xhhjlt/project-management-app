@@ -45,7 +45,7 @@ const paperStyles = {
   opacity: 1,
   p: 1,
   cursor: 'pointer',
-  transition: '0.5s',
+  transition: 'opacity 0.5s',
   border: '1px solid #d1d9ff',
 };
 
