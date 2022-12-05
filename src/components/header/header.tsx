@@ -78,7 +78,7 @@ export default function Header() {
             gap: 2,
           }}
         >
-          <Avatar alt="logo" src="logo.jpg" sx={{ width: 50, height: 50 }} />
+          <Avatar alt="logo" src="logo.png" sx={{ width: 50, height: 50 }} />
           {matches680 && (
             <Box>
               <Typography variant="h6">
@@ -120,6 +120,7 @@ export default function Header() {
               <DashboardRounded sx={{ m: '5px' }} />
               {matches1000 && (language === 'EN' ? 'Create new board' : 'Создать доску')}
             </IconButton>
+            {<BoardModal />}
           </>
         ) : (
           <>
@@ -140,7 +141,6 @@ export default function Header() {
           {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
       </Toolbar>
-      <BoardModal />
     </AppBar>
   );
 }
