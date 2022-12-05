@@ -17,7 +17,7 @@ const paperStyles = {
   p: '12px',
   display: 'flex',
   flexDirection: 'column',
-  minHeight: '180px',
+  minHeight: '200px',
 };
 
 export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTasks) => {
@@ -98,7 +98,7 @@ export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTas
                 mt={1}
                 mb={2}
                 pb={1}
-                sx={{ overflow: 'auto' }}
+                sx={{ overflow: 'auto', height: '100%' }}
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >

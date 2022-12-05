@@ -256,19 +256,24 @@ export const ItemDescriptionModal = () => {
                       sx={titleStyles}
                       onClick={() => setTitleIsEditing(true)}
                     >
-                      {title ? title : item!.title}
+                      {title === '' || title ? title : item!.title}
                     </Typography>
                   )}
                   <TextField
                     style={{ display: titleIsEditing ? 'inline-block' : 'none' }}
-                    defaultValue={title ? title : item!.title}
+                    defaultValue={title === '' || title ? title : item!.title}
                     variant="outlined"
                     sx={titleEditStyles}
                     autoComplete="off"
                     {...titleFormProps}
                     ref={customTitleRef}
                     error={errors.title ? true : false}
-                    helperText={errors.title && 'You should provide a title'}
+                    helperText={
+                      errors.title &&
+                      (language === 'EN'
+                        ? 'You should provide a title'
+                        : 'Вам нужно ввести название')
+                    }
                     multiline
                     autoFocus
                     fullWidth
@@ -325,7 +330,7 @@ export const ItemDescriptionModal = () => {
                           <Select
                             labelId="priority-select-label"
                             id="priority-select"
-                            value={priority}
+                            value={priority ? priority : item.priority}
                             label="Priority"
                             {...register('priority')}
                           >
@@ -369,7 +374,7 @@ export const ItemDescriptionModal = () => {
                           <Select
                             labelId="size-select-label"
                             id="size-select"
-                            value={size}
+                            value={size ? size : item.size}
                             label="Size"
                             {...register('size')}
                           >

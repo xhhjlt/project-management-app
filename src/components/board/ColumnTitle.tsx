@@ -7,11 +7,6 @@ const titleStyles = {
   fontWeight: 600,
   cursor: 'pointer',
   wordBreak: 'break-word',
-  '&:focus': {
-    outline: `2px solid #bdbdbd`,
-    borderRadius: '4px',
-    p: '0 0.5rem',
-  },
 };
 
 type ColumnTitleProps = {
@@ -35,7 +30,12 @@ export const ColumnTitle = ({ value, onChange }: ColumnTitleProps) => {
   };
 
   const handleSave = () => {
-    onChange(ref?.current?.textContent === null ? undefined : ref?.current?.textContent);
+    const value = ref?.current?.textContent === null ? undefined : ref?.current?.textContent;
+    if (value) {
+      onChange(ref?.current?.textContent === null ? undefined : ref?.current?.textContent);
+    } else {
+      handleFocusLoose();
+    }
     setIsTitleEditing(false);
     ref?.current?.blur();
   };
@@ -48,6 +48,9 @@ export const ColumnTitle = ({ value, onChange }: ColumnTitleProps) => {
           ...titleStyles,
           color: theme.palette.mode === 'dark' ? theme.palette.grey[400] : theme.palette.grey[900],
           '&:focus': {
+            outline: `2px solid #bdbdbd`,
+            borderRadius: '4px',
+            p: '0 0.5rem',
             backgroundColor:
               theme.palette.mode === 'dark' ? theme.palette.grey[900] : theme.palette.common.white,
           },

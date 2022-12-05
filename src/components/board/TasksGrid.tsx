@@ -74,9 +74,20 @@ export const TasksGrid = () => {
     setColumnsWithTasks(newColumnsWithTasks);
   };
 
+  const repairColumnsOrder = (columns: Column[]) => {
+    const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+    if (sortedColumns.some((c: Column, index: number) => c.order !== index)) {
+      const fixedColumns = columns.map((c: Column, order: number) => ({ ...c, order }));
+      updateOrder(fixedColumns.map(({ _id, order }: Column) => ({ _id, order })));
+      return fixedColumns;
+    }
+    return columns;
+  };
+
   useEffect(() => {
     if (columnsOnBoard) {
-      const columnsWithTasks = linkColumnsWithTasks(columnsOnBoard, tasksOnBoard);
+      const fixedColumns = repairColumnsOrder(columnsOnBoard);
+      const columnsWithTasks = linkColumnsWithTasks(fixedColumns, tasksOnBoard);
       repairOrders(columnsWithTasks);
     }
   }, [columnsOnBoard, tasksOnBoard]);
