@@ -3,10 +3,8 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { ColumnModal } from './ColumnModal';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { openColumnModal } from './boardSlice';
-import { DeleteColumnModal } from './DeleteColumnModal';
 import { AddItemModal } from './AddItemModal';
 import { ItemDescriptionModal } from './ItemDescriptionModal';
-import { DeleteItemModal } from './DeleteItemModal';
 import { DragDropContext, DropResult, Droppable } from 'react-beautiful-dnd';
 import { useParams } from 'react-router-dom';
 import { useAllColumnsInBoardQuery, useColumnsSetUpdateOrderMutation } from 'services/api/columns';
@@ -224,10 +222,8 @@ export const TasksGrid = () => {
         )}
       </Button>
       <ColumnModal />
-      <DeleteColumnModal />
       <AddItemModal />
       <ItemDescriptionModal />
-      <DeleteItemModal />
     </Stack>
   );
 };

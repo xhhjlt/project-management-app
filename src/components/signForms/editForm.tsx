@@ -11,7 +11,6 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { currentLanguage } from 'components/header/langSlice';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { loginRegisterOptions, nameRegisterOptions, passwordRegisterOptions } from './utils';
-import { DeleteConfirmationModal } from 'components/common/DeleteConfirmationModal';
 import { changeLogin, clearUser, CurrentUserId } from './authSlice';
 import { useDeleteUserMutation, useUpdateUserMutation } from 'services/api/users';
 import { openDeleteConfirmationModal } from 'components/common/commonSlice';
@@ -41,8 +40,22 @@ export default function EditProfileForm() {
     }
   };
 
-  const onDelete = () => {
-    dispatch(openDeleteConfirmationModal(userId));
+  const handleDelete = () => {
+    dispatch(
+      openDeleteConfirmationModal({
+        text: {
+          titleEn: 'user',
+          titleRus: 'пользователя',
+          bodyEn: 'user',
+          bodyRus: 'этого пользователя',
+        },
+        onDelete: () => {
+          () => {
+            deleteUser(userId).then(() => dispatch(clearUser()));
+          };
+        },
+      })
+    );
   };
 
   return (
@@ -105,7 +118,7 @@ export default function EditProfileForm() {
               justifyContent: 'space-between',
             }}
           >
-            <Button type="button" color="error" variant="contained" onClick={onDelete}>
+            <Button type="button" color="error" variant="contained" onClick={handleDelete}>
               {language === 'EN' ? 'Delete' : 'Удалить'}
             </Button>
             <Button type="submit" color="success" variant="contained">
@@ -114,18 +127,6 @@ export default function EditProfileForm() {
           </Box>
         </Box>
       </Box>
-      <DeleteConfirmationModal
-        text={{
-          titleEn: 'user',
-          titleRus: 'пользователя',
-          bodyEn: 'user',
-          bodyRus: 'этого пользователя',
-        }}
-        onDelete={(id) => {
-          deleteUser(id).then(() => dispatch(clearUser()));
-        }}
-        id={userId}
-      />
     </Container>
   );
 }

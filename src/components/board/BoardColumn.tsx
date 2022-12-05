@@ -1,14 +1,15 @@
 import { Button, Divider, IconButton, Paper, Stack, Badge } from '@mui/material';
-import { openDeleteColumnModal, openItemModal } from './boardSlice';
+import { openItemModal } from './boardSlice';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Item } from './Item';
 import { ColumnTitle } from './ColumnTitle';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
-import { useUpdateColumnMutation } from 'services/api/columns';
+import { useDeleteColumnMutation, useUpdateColumnMutation } from 'services/api/columns';
 import { ColumnWithTasks } from './TasksGrid';
 import { currentLanguage } from 'components/header/langSlice';
+import { openDeleteConfirmationModal } from 'components/common/commonSlice';
 
 const paperStyles = {
   boxSizing: 'border-box',
@@ -24,6 +25,21 @@ export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTas
   const dispatch = useAppDispatch();
   const [updateColumn] = useUpdateColumnMutation();
   const language = useAppSelector(currentLanguage);
+  const [deleteColumn] = useDeleteColumnMutation();
+
+  const handleDelete = () => {
+    dispatch(
+      openDeleteConfirmationModal({
+        text: {
+          titleEn: 'column',
+          titleRus: 'колонку',
+          bodyEn: 'column and all the tasks in it',
+          bodyRus: 'эту колонку и все задачи в ней',
+        },
+        onDelete: () => deleteColumn({ _id, boardId }),
+      })
+    );
+  };
 
   return (
     <Draggable draggableId={_id} index={order}>
@@ -56,19 +72,7 @@ export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTas
               ></Badge>
             </Stack>
             <Stack>
-              <IconButton
-                sx={{ p: 0, ml: 2, pt: '4px' }}
-                onClick={() => {
-                  dispatch(
-                    openDeleteColumnModal({
-                      _id,
-                      order,
-                      title,
-                      boardId,
-                    })
-                  );
-                }}
-              >
+              <IconButton sx={{ p: 0, ml: 2, pt: '4px' }} onClick={handleDelete}>
                 <ClearOutlinedIcon
                   sx={{
                     color: '#616161',

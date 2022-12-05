@@ -2,7 +2,7 @@ import { Backdrop, Box, Button, Fade, Modal, Stack, Typography, IconButton } fro
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
-import { closeDeleteConfirmationModal, selectDeleteConfirmationModalOpen } from './commonSlice';
+import { closeDeleteConfirmationModal, selectDeleteConfirmationModalParams } from './commonSlice';
 import { currentLanguage } from 'components/header/langSlice';
 
 const style = {
@@ -21,30 +21,21 @@ const style = {
   gap: 3,
 };
 
-export type DeleteConfirmationModalParams = {
-  text: {
-    titleEn: string;
-    titleRus: string;
-    bodyEn: string;
-    bodyRus: string;
-  };
-  onDelete: (id: string) => void;
-  id: string;
-};
-
-export const DeleteConfirmationModal = ({ text, onDelete, id }: DeleteConfirmationModalParams) => {
-  const deleteConfirmationModalOpen = id === useAppSelector(selectDeleteConfirmationModalOpen);
+export const DeleteConfirmationModal = () => {
+  const deleteConfirmationModalParams = useAppSelector(selectDeleteConfirmationModalParams);
   const dispatch = useAppDispatch();
   const language = useAppSelector(currentLanguage);
 
   const handleClose = useCallback(() => {
     dispatch(closeDeleteConfirmationModal());
   }, [dispatch]);
-
+  if (!deleteConfirmationModalParams) {
+    return null;
+  }
   return (
     <div>
       <Modal
-        open={deleteConfirmationModalOpen}
+        open={!!deleteConfirmationModalParams}
         onClose={handleClose}
         closeAfterTransition
         BackdropComponent={Backdrop}
@@ -52,7 +43,7 @@ export const DeleteConfirmationModal = ({ text, onDelete, id }: DeleteConfirmati
           timeout: 500,
         }}
       >
-        <Fade in={deleteConfirmationModalOpen}>
+        <Fade in={!!deleteConfirmationModalParams}>
           <Box sx={style}>
             <IconButton
               sx={{ p: 0, position: 'absolute', right: '1rem', top: '1rem' }}
@@ -67,13 +58,18 @@ export const DeleteConfirmationModal = ({ text, onDelete, id }: DeleteConfirmati
             </IconButton>
             <Typography variant="h6" component="h2" sx={{ textAlign: 'center' }}>
               {language === 'EN' ? 'DELETE ' : 'УДАЛИТЬ '}
-              {language === 'EN' ? text.titleEn.toUpperCase() : text.titleRus.toUpperCase()}
+              {language === 'EN'
+                ? deleteConfirmationModalParams!.text.titleEn.toUpperCase()
+                : deleteConfirmationModalParams!.text.titleRus.toUpperCase()}
             </Typography>
             <Typography>
               {language === 'EN'
                 ? 'Are you sure you want to delete this '
                 : 'Вы уверенны, что хотите удалить '}
-              {language === 'EN' ? text.bodyEn : text.bodyRus}?
+              {language === 'EN'
+                ? deleteConfirmationModalParams!.text.bodyEn
+                : deleteConfirmationModalParams!.text.bodyRus}
+              ?
             </Typography>
             <Stack direction="row" justifyContent="space-evenly">
               <Button variant="contained" sx={{ width: '7rem' }} onClick={handleClose} color="info">
@@ -84,7 +80,7 @@ export const DeleteConfirmationModal = ({ text, onDelete, id }: DeleteConfirmati
                 color="error"
                 sx={{ width: '7rem' }}
                 onClick={() => {
-                  onDelete(id);
+                  deleteConfirmationModalParams!.onDelete();
                   dispatch(handleClose);
                 }}
               >

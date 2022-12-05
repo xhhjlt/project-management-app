@@ -10,6 +10,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { IconButton } from '@mui/material';
 import { useAppDispatch } from 'app/hooks';
 import { openDeleteConfirmationModal } from 'components/common/commonSlice';
+import { useDeleteBoardMutation } from 'services/api/boards';
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -58,6 +59,7 @@ export const BoardMenu = (props: { id: string }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const dispatch = useAppDispatch();
+  const [deleteBoard] = useDeleteBoardMutation();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -69,7 +71,12 @@ export const BoardMenu = (props: { id: string }) => {
   };
 
   const handleDelete = (event: React.MouseEvent<HTMLElement>) => {
-    dispatch(openDeleteConfirmationModal(props.id));
+    dispatch(
+      openDeleteConfirmationModal({
+        text: { titleEn: 'board', titleRus: 'доску', bodyEn: 'board', bodyRus: 'эту доску' },
+        onDelete: () => deleteBoard(props.id),
+      })
+    );
     handleClose(event);
   };
 

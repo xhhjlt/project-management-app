@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import { DeleteConfirmationModal } from 'components/common/DeleteConfirmationModal';
 import { ErrorBoundary } from 'components/common/errorBoundary';
 import Footer from 'components/footer/footer';
 import Header from 'components/header/header';
@@ -14,6 +15,7 @@ export default function Root() {
       }}
     >
       <ErrorBoundary>
+        <DeleteConfirmationModal />
         <Header />
         <Outlet />
         <Footer />

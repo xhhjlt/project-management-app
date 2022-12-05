@@ -15,11 +15,7 @@ import {
   TextField,
 } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  closeItemDescriptionModal,
-  openDeleteItemModal,
-  selectItemDescriptionModalOpen,
-} from './boardSlice';
+import { closeItemDescriptionModal, selectItemDescriptionModalOpen } from './boardSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import {
@@ -35,9 +31,10 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Form, useParams } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useTaskByIdQuery, useUpdateTaskMutation } from 'services/api/tasks';
+import { useDeleteTaskMutation, useTaskByIdQuery, useUpdateTaskMutation } from 'services/api/tasks';
 import Task from 'types/api/tasks';
 import { currentLanguage } from 'components/header/langSlice';
+import { openDeleteConfirmationModal } from 'components/common/commonSlice';
 
 const style = {
   boxSizing: 'border-box',
@@ -114,6 +111,7 @@ export const ItemDescriptionModal = () => {
   );
   const [updateItem] = useUpdateTaskMutation();
   const language = useAppSelector(currentLanguage);
+  const [deleteItem] = useDeleteTaskMutation();
 
   const title = watch('title');
   const description = watch('description');
@@ -402,7 +400,20 @@ export const ItemDescriptionModal = () => {
                         startIcon={<DeleteIcon />}
                         onClick={() => {
                           dispatch(
-                            openDeleteItemModal({ itemId: item!._id, columnId: item!.columnId })
+                            openDeleteConfirmationModal({
+                              text: {
+                                titleEn: 'item',
+                                titleRus: 'задачу',
+                                bodyEn: 'item from this board',
+                                bodyRus: 'эту задачу с текущей доски',
+                              },
+                              onDelete: () =>
+                                deleteItem({
+                                  _id: item!._id,
+                                  columnId: item!.columnId,
+                                  boardId: boardId!,
+                                }),
+                            })
                           );
                         }}
                       >
