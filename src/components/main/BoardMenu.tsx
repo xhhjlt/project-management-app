@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { openDeleteConfirmationModal } from 'components/common/commonSlice';
 import { currentLanguage } from 'components/header/langSlice';
 import { openBoardModal } from './mainSlice';
+import { useDeleteBoardMutation } from 'services/api/boards';
 
 type BoardMenuProps = {
   id: string;
@@ -64,6 +65,7 @@ export const BoardMenu = ({ id }: BoardMenuProps) => {
   const language = useAppSelector(currentLanguage);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [deleteBoard] = useDeleteBoardMutation();
   const dispatch = useAppDispatch();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -76,7 +78,17 @@ export const BoardMenu = ({ id }: BoardMenuProps) => {
   };
 
   const handleDelete = (event: React.MouseEvent<HTMLElement>) => {
-    dispatch(openDeleteConfirmationModal(id));
+    dispatch(
+      openDeleteConfirmationModal({
+        text: {
+          titleEn: 'board',
+          titleRus: 'доску',
+          bodyEn: 'board and all the columns in it',
+          bodyRus: 'эту доску и все задачи в ней',
+        },
+        onDelete: () => deleteBoard(id),
+      })
+    );
     handleClose(event);
   };
 
