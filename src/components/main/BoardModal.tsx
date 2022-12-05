@@ -200,7 +200,7 @@ export const BoardModal = ({ boardId = '' }) => {
                 <Button
                   variant="contained"
                   component="label"
-                  color="primary"
+                  color="success"
                   sx={{ width: '7rem' }}
                 >
                   {language === 'EN' ? 'OK' : 'ОК'}
