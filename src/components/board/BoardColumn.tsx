@@ -1,4 +1,4 @@
-import { Button, Divider, IconButton, Paper, Stack, Badge } from '@mui/material';
+import { Button, Divider, IconButton, Paper, Stack, Badge, useTheme } from '@mui/material';
 import { openItemModal } from './boardSlice';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
@@ -15,13 +15,13 @@ const paperStyles = {
   boxSizing: 'border-box',
   width: 340,
   p: '12px',
-  backgroundColor: '#f9fbe7', // '#f0f4c3',
   display: 'flex',
   flexDirection: 'column',
   minHeight: '180px',
 };
 
 export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTasks) => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
   const [updateColumn] = useUpdateColumnMutation();
   const language = useAppSelector(currentLanguage);
@@ -44,7 +44,15 @@ export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTas
   return (
     <Draggable draggableId={_id} index={order}>
       {(provided) => (
-        <Paper sx={paperStyles} {...provided.draggableProps} ref={provided.innerRef}>
+        <Paper
+          elevation={10}
+          sx={{
+            ...paperStyles,
+            backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[900] : '#f9fbe7',
+          }}
+          {...provided.draggableProps}
+          ref={provided.innerRef}
+        >
           <Stack
             direction="row"
             justifyContent={'space-between'}
