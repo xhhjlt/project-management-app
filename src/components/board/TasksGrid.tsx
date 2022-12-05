@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { useTasksSetByBoardIdQuery, useTasksSetUpdateOrderMutation } from 'services/api/tasks';
 import Task from 'types/api/tasks';
 import { currentLanguage } from 'components/header/langSlice';
+import { Column } from 'types/api/columns';
 
 export type ColumnWithTasks = {
   _id: string;
@@ -35,16 +36,50 @@ export const TasksGrid = () => {
   const { data: tasksOnBoard } = useTasksSetByBoardIdQuery(id as string);
   const [updateTaskOrder] = useTasksSetUpdateOrderMutation();
 
+  const linkColumnsWithTasks = (columns: Column[] | undefined, tasks: Task[] | undefined) =>
+    columns &&
+    columns.map((col) => {
+      const filteredtasks = tasks?.filter((t) => t.columnId === col._id) || [];
+      return {
+        ...col,
+        tasks: filteredtasks,
+      };
+    });
+
+  const repairOrders = (columnsWithTasks: ColumnWithTasks[] | undefined) => {
+    let fixed = false;
+    const newColumnsWithTasks = columnsWithTasks?.map((col: ColumnWithTasks) => {
+      col.tasks.sort((a: Task, b: Task) => a.order - b.order);
+      return {
+        ...col,
+        tasks: col.tasks.map((task: Task, order: number) => {
+          if (task.order !== order) {
+            fixed = true;
+            return { ...task, order };
+          }
+          return task;
+        }),
+      };
+    });
+    if (fixed) {
+      const newTasksOnBoard = newColumnsWithTasks?.map((c: ColumnWithTasks) => c.tasks).flat();
+      if (newTasksOnBoard) {
+        updateTaskOrder(
+          newTasksOnBoard.map((item: Task) => ({
+            _id: item._id,
+            order: item.order,
+            columnId: item.columnId,
+          }))
+        );
+      }
+    }
+    setColumnsWithTasks(newColumnsWithTasks);
+  };
+
   useEffect(() => {
     if (columnsOnBoard) {
-      const columnsWithTasks = columnsOnBoard.map((col) => {
-        const filteredtasks = tasksOnBoard?.filter((t) => t.columnId === col._id) || [];
-        return {
-          ...col,
-          tasks: filteredtasks,
-        };
-      });
-      setColumnsWithTasks(columnsWithTasks);
+      const columnsWithTasks = linkColumnsWithTasks(columnsOnBoard, tasksOnBoard);
+      repairOrders(columnsWithTasks);
     }
   }, [columnsOnBoard, tasksOnBoard]);
 
@@ -135,6 +170,7 @@ export const TasksGrid = () => {
             columnId: item.columnId,
           }))
         );
+        setColumnsWithTasks(linkColumnsWithTasks(columnsOnBoard, newCopyOfTasks));
       }
     }
   };

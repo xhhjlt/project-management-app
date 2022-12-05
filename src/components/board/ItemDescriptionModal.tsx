@@ -188,7 +188,7 @@ export const ItemDescriptionModal = () => {
       description: data.description || 'No description provided...',
       priority: data.priority || '',
       size: data.size || '',
-      order: 0,
+      order: item!.order,
       userId: '',
       users: [],
     });
