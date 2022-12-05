@@ -90,6 +90,7 @@ export const TasksGrid = () => {
       const columnsWithTasks = linkColumnsWithTasks(fixedColumns, tasksOnBoard);
       repairOrders(columnsWithTasks);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnsOnBoard, tasksOnBoard]);
 
   const onDragEnd = (result: DropResult) => {
