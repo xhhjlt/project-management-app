@@ -30,7 +30,12 @@ export const ColumnTitle = ({ value, onChange }: ColumnTitleProps) => {
   };
 
   const handleSave = () => {
-    onChange(ref?.current?.textContent === null ? undefined : ref?.current?.textContent);
+    const value = ref?.current?.textContent === null ? undefined : ref?.current?.textContent;
+    if (value) {
+      onChange(ref?.current?.textContent === null ? undefined : ref?.current?.textContent);
+    } else {
+      handleFocusLoose();
+    }
     setIsTitleEditing(false);
     ref?.current?.blur();
   };

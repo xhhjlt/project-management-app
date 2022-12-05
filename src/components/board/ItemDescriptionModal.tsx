@@ -268,7 +268,12 @@ export const ItemDescriptionModal = () => {
                     {...titleFormProps}
                     ref={customTitleRef}
                     error={errors.title ? true : false}
-                    helperText={errors.title && 'You should provide a title'}
+                    helperText={
+                      errors.title &&
+                      (language === 'EN'
+                        ? 'You should provide a title'
+                        : 'Вам нужно ввести название')
+                    }
                     multiline
                     autoFocus
                     fullWidth
