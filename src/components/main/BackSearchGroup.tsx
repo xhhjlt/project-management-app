@@ -3,6 +3,8 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import { alpha, styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link as RouterLink } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { searchBoard, setSearchBoard } from './mainSlice';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -12,6 +14,7 @@ const Search = styled('div')(({ theme }) => ({
   '&:hover': {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
+  color: 'CaptionText',
   marginRight: theme.spacing(2),
   marginLeft: 0,
   width: '100%',
@@ -35,7 +38,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.grey[900],
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 0, 1, 1),
     paddingRight: `calc(1em + ${theme.spacing(4)})`,
@@ -55,6 +58,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export const BackSearchGroup = () => {
+  const searchValue = useAppSelector(searchBoard);
+  const dispatch = useAppDispatch();
+
   return (
     <Stack direction="row" spacing={2}>
       <Link component={RouterLink} to="/">
@@ -66,7 +72,13 @@ export const BackSearchGroup = () => {
         <SearchIconWrapper>
           <SearchIcon />
         </SearchIconWrapper>
-        <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+        <StyledInputBase
+          type="text"
+          value={searchValue}
+          onChange={(e) => dispatch(setSearchBoard(e.target.value))}
+          placeholder="Search…"
+          inputProps={{ 'aria-label': 'search' }}
+        />
       </Search>
     </Stack>
   );

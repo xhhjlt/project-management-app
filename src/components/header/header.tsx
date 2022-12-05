@@ -26,8 +26,8 @@ import { isUserLoggedIn, clearUser } from 'components/signForms/authSlice';
 import { AppRoutes } from 'types/routes';
 import { useSnackbar } from 'notistack';
 import { errorToastFlag, errorToastMessage } from 'components/common/commonSlice';
-import { openCreateBoardModal } from 'components/main/mainSlice';
-import { CreateBoardModal } from 'components/main/CreateBoardModal';
+import { openBoardModal } from 'components/main/mainSlice';
+import { BoardModal } from 'components/main/BoardModal';
 
 export default function Header() {
   const language = useAppSelector(currentLanguage);
@@ -114,8 +114,7 @@ export default function Header() {
               size="small"
               color="inherit"
               onClick={() => {
-                navigate(AppRoutes.Main);
-                dispatch(openCreateBoardModal());
+                dispatch(openBoardModal());
               }}
             >
               <DashboardRounded sx={{ m: '5px' }} />
@@ -141,7 +140,7 @@ export default function Header() {
           {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
       </Toolbar>
-      <CreateBoardModal />
+      <BoardModal />
     </AppBar>
   );
 }
