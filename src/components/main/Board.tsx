@@ -45,7 +45,7 @@ export const Board = ({ id, title, description }: BoardType) => {
       elevation={10}
       sx={{
         ...paperStyles,
-        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[900] : '#dcedc8',
+        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[900] : '#fffde7', //'#e3f2fd', //'#dcedc8',
       }}
     >
       <Stack spacing={1} onClick={handleClick}>

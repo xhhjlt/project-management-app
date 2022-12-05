@@ -45,12 +45,12 @@ export default function App() {
           primary: {
             main: '#404b90',
           },
-          error: {
-            light: '#ff7961',
-            main: '#f44336',
-            dark: '#ba000d',
-            contrastText: '#fff',
-          },
+          // error: {
+          //   light: '#ff7961',
+          //   main: '#f44336',
+          //   dark: '#ba000d',
+          //   contrastText: '#fff',
+          // },
         },
       }),
     [mode]

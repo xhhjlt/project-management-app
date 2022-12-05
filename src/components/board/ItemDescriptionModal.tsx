@@ -115,6 +115,8 @@ export const ItemDescriptionModal = () => {
 
   const title = watch('title');
   const description = watch('description');
+  const priority = watch('priority');
+  const size = watch('size');
 
   const getDescription = () => {
     if (description) {
@@ -144,9 +146,12 @@ export const ItemDescriptionModal = () => {
 
   useEffect(() => {
     if (itemDescriptionModalOpen.isOpen && item) {
-      reset({
+      const nextValue = {
         title: item!.title,
-      });
+        priority: item!.priority || '',
+        size: item!.size || '',
+      };
+      reset(nextValue);
     }
   }, [itemDescriptionModalOpen.isOpen, item]);
 
@@ -320,7 +325,7 @@ export const ItemDescriptionModal = () => {
                           <Select
                             labelId="priority-select-label"
                             id="priority-select"
-                            defaultValue={item!.priority}
+                            value={priority}
                             label="Priority"
                             {...register('priority')}
                           >
@@ -364,7 +369,7 @@ export const ItemDescriptionModal = () => {
                           <Select
                             labelId="size-select-label"
                             id="size-select"
-                            defaultValue={item!.size}
+                            value={size}
                             label="Size"
                             {...register('size')}
                           >
