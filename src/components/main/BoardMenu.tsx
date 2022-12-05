@@ -8,9 +8,15 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { IconButton } from '@mui/material';
-import { useAppDispatch } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { openDeleteConfirmationModal } from 'components/common/commonSlice';
+import { currentLanguage } from 'components/header/langSlice';
+import { openBoardModal } from './mainSlice';
 import { useDeleteBoardMutation } from 'services/api/boards';
+
+type BoardMenuProps = {
+  id: string;
+};
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -55,11 +61,12 @@ const iconDeleteStyles = {
   fontSize: 18,
 };
 
-export const BoardMenu = (props: { id: string }) => {
+export const BoardMenu = ({ id }: BoardMenuProps) => {
+  const language = useAppSelector(currentLanguage);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const dispatch = useAppDispatch();
   const [deleteBoard] = useDeleteBoardMutation();
+  const dispatch = useAppDispatch();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -73,10 +80,25 @@ export const BoardMenu = (props: { id: string }) => {
   const handleDelete = (event: React.MouseEvent<HTMLElement>) => {
     dispatch(
       openDeleteConfirmationModal({
-        text: { titleEn: 'board', titleRus: 'доску', bodyEn: 'board', bodyRus: 'эту доску' },
-        onDelete: () => deleteBoard(props.id),
+        text: {
+          titleEn: 'board',
+          titleRus: 'доску',
+          bodyEn: 'board and all the columns in it',
+          bodyRus: 'эту доску и все задачи в ней',
+        },
+        onDelete: () => deleteBoard(id),
       })
     );
+    handleClose(event);
+  };
+
+  const handleEdit = async (event: React.MouseEvent<HTMLElement>) => {
+    dispatch(openBoardModal({ id, type: 'edit' }));
+    handleClose(event);
+  };
+
+  const handleDuplicate = async (event: React.MouseEvent<HTMLElement>) => {
+    dispatch(openBoardModal({ id, type: 'duplicate' }));
     handleClose(event);
   };
 
@@ -86,18 +108,18 @@ export const BoardMenu = (props: { id: string }) => {
         <MoreHorizIcon />
       </IconButton>
       <StyledMenu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem onClick={handleClose} disableRipple>
+        <MenuItem onClick={handleEdit} disableRipple>
           <EditIcon sx={iconStyles} />
-          Edit
+          {language === 'EN' ? 'Edit' : 'Редактировать'}
         </MenuItem>
-        <MenuItem onClick={handleClose} disableRipple>
+        <MenuItem onClick={handleDuplicate} disableRipple>
           <FileCopyIcon sx={iconStyles} />
-          Duplicate
+          {language === 'EN' ? 'Duplicate' : 'Дублировать'}
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
         <MenuItem onClick={handleDelete} sx={{ color: '#f44336' }} disableRipple>
           <DeleteRoundedIcon sx={iconDeleteStyles} color="secondary" />
-          Delete
+          {language === 'EN' ? 'Delete' : 'Удалить'}
         </MenuItem>
       </StyledMenu>
     </div>

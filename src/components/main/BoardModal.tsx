@@ -9,16 +9,21 @@ import {
   TextField,
   Typography,
   IconButton,
+  useTheme,
 } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 import { Form } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
-import { closeCreateBoardModal, selectCreateBoardModalOpen } from './mainSlice';
 import { currentLanguage } from 'components/header/langSlice';
 import { CurrentUserId } from 'components/signForms/authSlice';
-import { useCreateBoardMutation } from 'services/api/boards';
+import {
+  useBoardByIdQuery,
+  useCreateBoardMutation,
+  useUpdateBoardMutation,
+} from 'services/api/boards';
+import { closeBoardModal, selectBoardModalOpen, selectBoardModalType } from './mainSlice';
 
 const style = {
   boxSizing: 'content-box',
@@ -41,21 +46,39 @@ export type FormBoardType = {
   description?: string;
 };
 
-export const CreateBoardModal = () => {
+export const BoardModal = ({ boardId = '' }) => {
+  const theme = useTheme();
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitSuccessful },
   } = useForm<FormBoardType>();
-  const createBoardModalOpen = useAppSelector(selectCreateBoardModalOpen);
+  const open = boardId === useAppSelector(selectBoardModalOpen);
+  const modalType = useAppSelector(selectBoardModalType);
   const language = useAppSelector(currentLanguage);
   const userId = useAppSelector(CurrentUserId);
+  const { data: boardData } = useBoardByIdQuery(boardId);
   const [createBoard] = useCreateBoardMutation();
+  const [updateBoard] = useUpdateBoardMutation();
   const dispatch = useAppDispatch();
+  const modalTitle = {
+    create: {
+      RU: 'СОЗДАТЬ НОВУЮ ДОСКУ',
+      EN: 'CREATE NEW BOARD',
+    },
+    edit: {
+      RU: 'РЕДАКТИРОВАТЬ ДОСКУ',
+      EN: 'EDIT BOARD',
+    },
+    duplicate: {
+      RU: 'ДУБЛИРОВАТЬ ДОСКУ',
+      EN: 'DUPLICATE BOARD',
+    },
+  };
 
   const handleClose = useCallback(() => {
-    dispatch(closeCreateBoardModal());
+    dispatch(closeBoardModal());
     reset();
   }, [dispatch, reset]);
 
@@ -64,19 +87,40 @@ export const CreateBoardModal = () => {
   }, [handleClose, isSubmitSuccessful, reset]);
 
   const onSubmit: SubmitHandler<FormBoardType> = async (data) => {
-    const board = {
-      title: data.title,
-      owner: userId || '',
-      users: [],
-      description: data.description || '',
-    };
-    await createBoard(board);
+    if (modalType === 'create') {
+      const board = {
+        title: data.title,
+        owner: userId || '',
+        users: [],
+        description: data.description || '',
+      };
+      await createBoard(board);
+    }
+    if (modalType === 'edit') {
+      const board = {
+        _id: boardId,
+        title: data.title,
+        owner: boardData?.owner || userId || '',
+        users: boardData?.users || [],
+        description: data.description || '',
+      };
+      await updateBoard(board);
+    }
+    if (modalType === 'duplicate') {
+      const board = {
+        title: data.title,
+        owner: userId || boardData?.owner || '',
+        users: boardData?.users || [],
+        description: data.description || '',
+      };
+      await createBoard(board);
+    }
   };
 
   return (
     <div>
       <Modal
-        open={createBoardModalOpen}
+        open={open}
         onClose={handleClose}
         closeAfterTransition
         BackdropComponent={Backdrop}
@@ -84,9 +128,15 @@ export const CreateBoardModal = () => {
           timeout: 500,
         }}
       >
-        <Fade in={createBoardModalOpen}>
+        <Fade in={open}>
           <Form onSubmit={handleSubmit(onSubmit)}>
-            <Box sx={style}>
+            <Box
+              sx={{
+                ...style,
+                color:
+                  theme.palette.mode === 'dark' ? theme.palette.grey[400] : theme.palette.grey[900],
+              }}
+            >
               <IconButton
                 sx={{ p: 0, position: 'absolute', right: '1rem', top: '1rem' }}
                 onClick={handleClose}
@@ -99,13 +149,13 @@ export const CreateBoardModal = () => {
                 />
               </IconButton>
               <Typography variant="h6" component="h2" sx={{ textAlign: 'center' }}>
-                {language === 'EN' ? 'CREATE NEW BOARD' : 'СОЗДАТЬ НОВУЮ ДОСКУ'}
+                {modalTitle[modalType][language]}
               </Typography>
               <Stack spacing={2}>
                 <FormControl>
                   <TextField
                     label={language === 'EN' ? 'Enter board title' : 'Введите название доски'}
-                    defaultValue=""
+                    defaultValue={boardData?.title}
                     variant="outlined"
                     sx={{ width: '100%' }}
                     autoComplete="off"
@@ -121,7 +171,7 @@ export const CreateBoardModal = () => {
                 </FormControl>
                 <TextField
                   label={language === 'EN' ? 'Enter board description' : 'Введите описание доски'}
-                  defaultValue=""
+                  defaultValue={boardData?.description}
                   variant="outlined"
                   sx={{ width: '100%' }}
                   autoComplete="off"
@@ -145,7 +195,7 @@ export const CreateBoardModal = () => {
                   color="success"
                   sx={{ width: '7rem' }}
                 >
-                  {language === 'EN' ? 'CREATE' : 'СОЗДАТЬ'}
+                  {language === 'EN' ? 'OK' : 'ОК'}
                   <input type="submit" hidden />
                 </Button>
               </Stack>
