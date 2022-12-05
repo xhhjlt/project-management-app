@@ -17,7 +17,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import { closeCreateBoardModal, selectCreateBoardModalOpen } from './mainSlice';
 import { currentLanguage } from 'components/header/langSlice';
-import { CurrentUserId, isUserLoggedIn } from 'components/signForms/authSlice';
+import { CurrentUserId } from 'components/signForms/authSlice';
 import { useCreateBoardMutation } from 'services/api/boards';
 
 const style = {
@@ -51,8 +51,7 @@ export const CreateBoardModal = () => {
   const createBoardModalOpen = useAppSelector(selectCreateBoardModalOpen);
   const language = useAppSelector(currentLanguage);
   const userId = useAppSelector(CurrentUserId);
-  const loggedIn = useAppSelector(isUserLoggedIn);
-  const [createBoard, { isLoading: isCreating }] = useCreateBoardMutation();
+  const [createBoard] = useCreateBoardMutation();
   const dispatch = useAppDispatch();
 
   const handleClose = useCallback(() => {
@@ -140,7 +139,12 @@ export const CreateBoardModal = () => {
                 >
                   {language === 'EN' ? 'Cancel' : 'ОТМЕНА'}
                 </Button>
-                <Button variant="contained" component="label" sx={{ width: '7rem' }}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  color="success"
+                  sx={{ width: '7rem' }}
+                >
                   {language === 'EN' ? 'CREATE' : 'СОЗДАТЬ'}
                   <input type="submit" hidden />
                 </Button>

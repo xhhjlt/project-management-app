@@ -1,4 +1,20 @@
-import { AppBar, Button, IconButton, Toolbar, Typography, useTheme, Box } from '@mui/material';
+import {
+  AppBar,
+  IconButton,
+  Toolbar,
+  Typography,
+  useTheme,
+  Box,
+  useMediaQuery,
+  Avatar,
+} from '@mui/material';
+import {
+  DashboardRounded,
+  PersonRounded,
+  LoginRounded,
+  LogoutRounded,
+  AppRegistrationRounded,
+} from '@mui/icons-material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import React, { useEffect, useState } from 'react';
@@ -10,6 +26,8 @@ import { isUserLoggedIn, clearUser } from 'components/signForms/authSlice';
 import { AppRoutes } from 'types/routes';
 import { useSnackbar } from 'notistack';
 import { errorToastFlag, errorToastMessage } from 'components/common/commonSlice';
+import { openCreateBoardModal } from 'components/main/mainSlice';
+import { CreateBoardModal } from 'components/main/CreateBoardModal';
 
 export default function Header() {
   const language = useAppSelector(currentLanguage);
@@ -22,6 +40,8 @@ export default function Header() {
   const { enqueueSnackbar } = useSnackbar();
   const errorMessage = useAppSelector(errorToastMessage);
   const errorFlag = useAppSelector(errorToastFlag);
+  const matches1000 = useMediaQuery('(min-width:1000px)');
+  const matches680 = useMediaQuery('(min-width:680px)');
 
   useEffect(() => {
     window.addEventListener('scroll', () => setScrolled(window.scrollY));
@@ -36,63 +56,92 @@ export default function Header() {
   return (
     <AppBar
       position="sticky"
-      sx={Object.assign(
-        scrolled
+      sx={{
+        ...(scrolled
           ? {
               borderRadius: '0% 0% 30px 30px',
             }
-          : {},
-        {
+          : {}),
+        ...{
           transition: 'all 0.3s',
-        }
-      )}
+          padding: matches680 ? '0 24px' : '0 2px',
+        },
+      }}
     >
-      <Toolbar>
-        <Box mr="auto">
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ cursor: 'pointer' }}
-            onClick={() => navigate(AppRoutes.Welcome)}
-          >
-            PMA
-          </Typography>
+      <Toolbar sx={{ padding: 0 }}>
+        <Box
+          mr="auto"
+          onClick={() => navigate(AppRoutes.Welcome)}
+          sx={{
+            cursor: 'pointer',
+            display: 'flex',
+            gap: 2,
+          }}
+        >
+          <Avatar alt="logo" src="logo.jpg" sx={{ width: 50, height: 50 }} />
+          {matches680 && (
+            <Box>
+              <Typography variant="h6">
+                {language === 'EN' ? `I'll do it tomorrow!` : `Я сделаю это завтра!`}
+              </Typography>
+              <Typography variant="body2">
+                {language === 'EN' ? `(Not exactly)` : `(Но это не точно)`}
+              </Typography>
+            </Box>
+          )}
         </Box>
         {user ? (
           <>
-            <Button size="large" color="inherit" onClick={() => navigate(AppRoutes.EditProfile)}>
-              {language === 'EN' ? 'Edit profile' : 'Редактировать профиль'}
-            </Button>
-            <Button
-              size="large"
+            <IconButton
+              size="small"
+              color="inherit"
+              onClick={() => navigate(AppRoutes.EditProfile)}
+            >
+              <PersonRounded sx={{ m: '5px' }} />
+              {matches1000 && (language === 'EN' ? 'Edit profile' : 'Редактировать профиль')}
+            </IconButton>
+            <IconButton
+              size="small"
               color="inherit"
               onClick={() => {
                 dispatch(clearUser());
               }}
             >
-              {language === 'EN' ? 'Sign Out' : 'Выход'}
-            </Button>
-            <Button size="large" color="inherit" onClick={() => alert('модалочка')}>
-              {language === 'EN' ? 'Create new board' : 'Создать доску'}
-            </Button>
+              <LogoutRounded sx={{ m: '5px' }} />
+              {matches1000 && (language === 'EN' ? 'Sign Out' : 'Выход')}
+            </IconButton>
+            <IconButton
+              size="small"
+              color="inherit"
+              onClick={() => {
+                navigate(AppRoutes.Main);
+                dispatch(openCreateBoardModal());
+              }}
+            >
+              <DashboardRounded sx={{ m: '5px' }} />
+              {matches1000 && (language === 'EN' ? 'Create new board' : 'Создать доску')}
+            </IconButton>
           </>
         ) : (
           <>
-            <Button size="large" color="inherit" onClick={() => navigate(AppRoutes.SignIn)}>
-              {language === 'EN' ? 'Sign In' : 'Войти'}
-            </Button>
-            <Button size="large" color="inherit" onClick={() => navigate(AppRoutes.SignUp)}>
-              {language === 'EN' ? 'Sign Up' : 'Регистрация'}
-            </Button>
+            <IconButton size="small" color="inherit" onClick={() => navigate(AppRoutes.SignIn)}>
+              <LoginRounded sx={{ m: '5px' }} />
+              {matches1000 && (language === 'EN' ? 'Sign In' : 'Войти')}
+            </IconButton>
+            <IconButton size="small" color="inherit" onClick={() => navigate(AppRoutes.SignUp)}>
+              <AppRegistrationRounded sx={{ m: '5px' }} />
+              {matches1000 && (language === 'EN' ? 'Sign Up' : 'Регистрация')}
+            </IconButton>
           </>
         )}
-        <Button size="medium" color="inherit" onClick={() => dispatch(langToggle())}>
-          {language === 'EN' ? 'ru' : 'en'}
-        </Button>
+        <IconButton size="small" color="inherit" onClick={() => dispatch(langToggle())}>
+          {language === 'EN' ? 'RU' : 'EN'}
+        </IconButton>
         <IconButton onClick={colorMode.toggleColorMode} color="inherit">
           {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
       </Toolbar>
+      <CreateBoardModal />
     </AppBar>
   );
 }

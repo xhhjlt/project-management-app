@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Board } from 'routes/board';
 import EditProfile from 'routes/editProfile';
-import ErrorPage from 'routes/errorPage';
+import ErrorPage from 'components/common/errorPage';
 import { Main } from 'routes/main';
 import Root from 'routes/root';
 import SignIn from 'routes/signIn';
