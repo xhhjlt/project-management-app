@@ -256,12 +256,12 @@ export const ItemDescriptionModal = () => {
                       sx={titleStyles}
                       onClick={() => setTitleIsEditing(true)}
                     >
-                      {title ? title : item!.title}
+                      {title === '' || title ? title : item!.title}
                     </Typography>
                   )}
                   <TextField
                     style={{ display: titleIsEditing ? 'inline-block' : 'none' }}
-                    defaultValue={title ? title : item!.title}
+                    defaultValue={title === '' || title ? title : item!.title}
                     variant="outlined"
                     sx={titleEditStyles}
                     autoComplete="off"
