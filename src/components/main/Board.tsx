@@ -3,6 +3,7 @@ import { useDeleteBoardMutation } from 'services/api/boards';
 import { BoardMenu } from './BoardMenu';
 import { DeleteConfirmationModal } from 'components/common/DeleteConfirmationModal';
 import { useNavigate } from 'react-router-dom';
+import { BoardModal } from './BoardModal';
 
 const paperStyles = {
   boxSizing: 'border-box',
@@ -39,7 +40,6 @@ export const Board = ({ id, title, description }: BoardType) => {
   const navigate = useNavigate();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    console.log((event.target as HTMLElement).tagName);
     if ((event.target as HTMLElement).tagName !== 'button') {
       navigate(`/board/${id}`);
     }
@@ -66,6 +66,7 @@ export const Board = ({ id, title, description }: BoardType) => {
         onDelete={deleteBoard}
         id={id}
       />
+      <BoardModal boardId={id} />
     </Paper>
   );
 };
