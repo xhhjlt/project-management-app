@@ -5,6 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { searchBoard, setSearchBoard } from './mainSlice';
+import { currentLanguage } from 'components/header/langSlice';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -59,6 +60,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export const BackSearchGroup = () => {
   const searchValue = useAppSelector(searchBoard);
+  const language = useAppSelector(currentLanguage);
   const dispatch = useAppDispatch();
 
   return (
@@ -76,8 +78,7 @@ export const BackSearchGroup = () => {
           type="text"
           value={searchValue}
           onChange={(e) => dispatch(setSearchBoard(e.target.value))}
-          placeholder="Search…"
-          inputProps={{ 'aria-label': 'search' }}
+          placeholder={language === 'EN' ? 'Search board…' : 'Поиск доски...'}
         />
       </Search>
     </Stack>

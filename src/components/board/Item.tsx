@@ -1,4 +1,4 @@
-import { openItemDescriptionModal } from './boardSlice';
+import { openItemDescriptionModal, selectTaskSearchValue } from './boardSlice';
 import { Paper, Typography, Chip, Stack, Tooltip } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import * as Icons from 'react-icons/fc';
@@ -42,8 +42,10 @@ const SIZE_EN: Record<string, string> = {
 };
 
 const paperStyles = {
+  opacity: 1,
   p: 1,
   cursor: 'pointer',
+  transition: '0.5s',
 };
 
 const getIconComponent = (icon: string) => {
@@ -58,12 +60,19 @@ const getIconComponent = (icon: string) => {
 export const Item = ({ _id, title, order, columnId, size, priority }: Task) => {
   const dispatch = useAppDispatch();
   const language = useAppSelector(currentLanguage);
+  const taskSearchValue = useAppSelector(selectTaskSearchValue);
 
   return (
     <Draggable draggableId={_id} index={order}>
       {(provided) => (
         <Paper
-          sx={paperStyles}
+          sx={{
+            ...paperStyles,
+            opacity:
+              !taskSearchValue || title.toUpperCase().includes(taskSearchValue.toUpperCase())
+                ? '1'
+                : '0.3',
+          }}
           onClick={() => {
             dispatch(openItemDescriptionModal({ itemId: _id, columnId }));
           }}
