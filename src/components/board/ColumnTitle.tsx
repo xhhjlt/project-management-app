@@ -1,16 +1,14 @@
-import { Stack, Typography, Button } from '@mui/material';
+import { Stack, Typography, Button, useTheme } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
 import { currentLanguage } from 'components/header/langSlice';
 import { useState, useRef } from 'react';
 
 const titleStyles = {
   fontWeight: 600,
-  color: '#212121',
   cursor: 'pointer',
   wordBreak: 'break-word',
   '&:focus': {
     outline: `2px solid #bdbdbd`,
-    backgroundColor: '#fff',
     borderRadius: '4px',
     p: '0 0.5rem',
   },
@@ -22,6 +20,7 @@ type ColumnTitleProps = {
 };
 
 export const ColumnTitle = ({ value, onChange }: ColumnTitleProps) => {
+  const theme = useTheme();
   const [isTitleEditing, setIsTitleEditing] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
   const language = useAppSelector(currentLanguage);
@@ -45,7 +44,14 @@ export const ColumnTitle = ({ value, onChange }: ColumnTitleProps) => {
     <Stack>
       <Typography
         variant="h6"
-        sx={titleStyles}
+        sx={{
+          ...titleStyles,
+          color: theme.palette.mode === 'dark' ? theme.palette.grey[400] : theme.palette.grey[900],
+          '&:focus': {
+            backgroundColor:
+              theme.palette.mode === 'dark' ? theme.palette.grey[900] : theme.palette.common.white,
+          },
+        }}
         suppressContentEditableWarning={true}
         contentEditable={true}
         onInput={handleTitleInput}

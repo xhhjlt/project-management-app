@@ -13,6 +13,7 @@ import {
   Select,
   Button,
   TextField,
+  useTheme,
 } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { closeItemDescriptionModal, selectItemDescriptionModalOpen } from './boardSlice';
@@ -58,7 +59,6 @@ const titleBlockStyles = {
 
 const titleStyles = {
   fontWeight: 600,
-  color: '#212121',
   cursor: 'pointer',
   whiteSpace: 'pre-line',
   p: '8.5px',
@@ -80,13 +80,13 @@ const descriptionBoxStyles = {
 };
 
 const descriptionStyles = {
-  color: '#212121',
   cursor: 'pointer',
   p: '8.5px',
   whiteSpace: 'pre-line',
 };
 
 export const ItemDescriptionModal = () => {
+  const theme = useTheme();
   const itemDescriptionModalOpen = useAppSelector(selectItemDescriptionModalOpen);
   const {
     register,
@@ -223,7 +223,15 @@ export const ItemDescriptionModal = () => {
             container={containerRef.current}
           >
             <Form onSubmit={handleSubmit(onSubmit)}>
-              <Box sx={style}>
+              <Box
+                sx={{
+                  ...style,
+                  color:
+                    theme.palette.mode === 'dark'
+                      ? theme.palette.grey[400]
+                      : theme.palette.grey[900],
+                }}
+              >
                 <Box sx={titleBlockStyles}>
                   <IconButton
                     sx={{ p: 0, position: 'absolute', right: '1rem', top: '1rem' }}
@@ -396,7 +404,7 @@ export const ItemDescriptionModal = () => {
                     <Stack spacing={2}>
                       <Button
                         variant="outlined"
-                        color="secondary"
+                        color="error"
                         startIcon={<DeleteIcon />}
                         onClick={() => {
                           dispatch(

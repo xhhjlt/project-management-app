@@ -9,6 +9,7 @@ import {
   TextField,
   Typography,
   IconButton,
+  useTheme,
 } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 import { Form, useParams } from 'react-router-dom';
@@ -38,6 +39,7 @@ const style = {
 };
 
 export const AddItemModal = () => {
+  const theme = useTheme();
   const {
     register,
     handleSubmit,
@@ -87,7 +89,13 @@ export const AddItemModal = () => {
       >
         <Fade in={itemModalOpen.isOpen}>
           <Form onSubmit={handleSubmit(onSubmit)}>
-            <Box sx={style}>
+            <Box
+              sx={{
+                ...style,
+                color:
+                  theme.palette.mode === 'dark' ? theme.palette.grey[400] : theme.palette.grey[900],
+              }}
+            >
               <IconButton
                 sx={{ p: 0, position: 'absolute', right: '1rem', top: '1rem' }}
                 onClick={handleClose}

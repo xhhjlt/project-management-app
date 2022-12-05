@@ -14,7 +14,6 @@ const Search = styled('div')(({ theme }) => ({
   '&:hover': {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
-  color: 'CaptionText',
   marginRight: theme.spacing(2),
   marginLeft: 0,
   width: '100%',
@@ -52,7 +51,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
     '&::placeholder': {
       textOverflow: 'ellipsis !important',
-      color: theme.palette.primary.dark,
+      color:
+        theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark,
     },
   },
 }));

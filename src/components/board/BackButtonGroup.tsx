@@ -38,7 +38,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.grey[900],
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 0, 1, 1),
     paddingRight: `calc(1em + ${theme.spacing(4)})`,
@@ -52,7 +52,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
     '&::placeholder': {
       textOverflow: 'ellipsis !important',
-      color: theme.palette.primary.dark,
+      color:
+        theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark,
     },
   },
 }));

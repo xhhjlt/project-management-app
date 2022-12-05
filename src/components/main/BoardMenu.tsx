@@ -118,7 +118,7 @@ export const BoardMenu = ({ id }: BoardMenuProps) => {
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
         <MenuItem onClick={handleDelete} sx={{ color: '#f44336' }} disableRipple>
-          <DeleteRoundedIcon sx={iconDeleteStyles} color="secondary" />
+          <DeleteRoundedIcon sx={iconDeleteStyles} color="error" />
           {language === 'EN' ? 'Delete' : 'Удалить'}
         </MenuItem>
       </StyledMenu>

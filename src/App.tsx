@@ -42,6 +42,15 @@ export default function App() {
             main: '#64748B',
             contrastText: '#fff',
           },
+          primary: {
+            main: '#404b90',
+          },
+          error: {
+            light: '#ff7961',
+            main: '#f44336',
+            dark: '#ba000d',
+            contrastText: '#fff',
+          },
         },
       }),
     [mode]
