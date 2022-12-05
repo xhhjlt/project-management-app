@@ -50,9 +50,9 @@ export default function EditProfileForm() {
           bodyRus: 'этого пользователя',
         },
         onDelete: () => {
-          () => {
-            deleteUser(userId).then(() => dispatch(clearUser()));
-          };
+          deleteUser(userId).then(() => {
+            dispatch(clearUser());
+          });
         },
       })
     );

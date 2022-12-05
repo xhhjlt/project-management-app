@@ -12,7 +12,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useCallback, useEffect } from 'react';
-import { Form } from 'react-router-dom';
+import { Form, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
@@ -24,6 +24,7 @@ import {
   useUpdateBoardMutation,
 } from 'services/api/boards';
 import { closeBoardModal, selectBoardModalOpen, selectBoardModalType } from './mainSlice';
+import { AppRoutes } from 'types/routes';
 
 const style = {
   boxSizing: 'content-box',
@@ -43,7 +44,7 @@ const style = {
 
 export type FormBoardType = {
   title: string;
-  description?: string;
+  description: string;
 };
 
 export const BoardModal = ({ boardId = '' }) => {
@@ -54,6 +55,7 @@ export const BoardModal = ({ boardId = '' }) => {
     reset,
     formState: { errors, isSubmitSuccessful },
   } = useForm<FormBoardType>();
+  const navigate = useNavigate();
   const open = boardId === useAppSelector(selectBoardModalOpen);
   const modalType = useAppSelector(selectBoardModalType);
   const language = useAppSelector(currentLanguage);
@@ -92,9 +94,10 @@ export const BoardModal = ({ boardId = '' }) => {
         title: data.title,
         owner: userId || '',
         users: [],
-        description: data.description || '',
+        description: data.description,
       };
       await createBoard(board);
+      navigate(AppRoutes.Main);
     }
     if (modalType === 'edit') {
       const board = {
@@ -102,7 +105,7 @@ export const BoardModal = ({ boardId = '' }) => {
         title: data.title,
         owner: boardData?.owner || userId || '',
         users: boardData?.users || [],
-        description: data.description || '',
+        description: data.description,
       };
       await updateBoard(board);
     }
@@ -111,7 +114,7 @@ export const BoardModal = ({ boardId = '' }) => {
         title: data.title,
         owner: userId || boardData?.owner || '',
         users: boardData?.users || [],
-        description: data.description || '',
+        description: data.description,
       };
       await createBoard(board);
     }
@@ -175,7 +178,14 @@ export const BoardModal = ({ boardId = '' }) => {
                   variant="outlined"
                   sx={{ width: '100%' }}
                   autoComplete="off"
-                  {...register('description')}
+                  {...register('description', { required: true })}
+                  error={errors.description ? true : false}
+                  helperText={
+                    errors.description &&
+                    (language === 'EN'
+                      ? 'You should provide a description'
+                      : 'Вам нужно ввести описание')
+                  }
                   multiline
                   rows={5}
                 />
@@ -192,7 +202,7 @@ export const BoardModal = ({ boardId = '' }) => {
                 <Button
                   variant="contained"
                   component="label"
-                  color="primary"
+                  color="success"
                   sx={{ width: '7rem' }}
                 >
                   {language === 'EN' ? 'OK' : 'ОК'}
