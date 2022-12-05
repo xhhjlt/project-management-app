@@ -48,7 +48,7 @@ export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTas
           elevation={10}
           sx={{
             ...paperStyles,
-            backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[900] : '#f9fbe7',
+            backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[900] : '#fffff7', //'#fffde7', //'#f9fbe7',
           }}
           {...provided.draggableProps}
           ref={provided.innerRef}
