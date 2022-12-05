@@ -9,6 +9,7 @@ import {
   TextField,
   Typography,
   IconButton,
+  useTheme,
 } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 import { Form } from 'react-router-dom';
@@ -46,6 +47,7 @@ export type FormBoardType = {
 };
 
 export const BoardModal = ({ boardId = '' }) => {
+  const theme = useTheme();
   const {
     register,
     handleSubmit,
@@ -128,7 +130,13 @@ export const BoardModal = ({ boardId = '' }) => {
       >
         <Fade in={open}>
           <Form onSubmit={handleSubmit(onSubmit)}>
-            <Box sx={style}>
+            <Box
+              sx={{
+                ...style,
+                color:
+                  theme.palette.mode === 'dark' ? theme.palette.grey[400] : theme.palette.grey[900],
+              }}
+            >
               <IconButton
                 sx={{ p: 0, position: 'absolute', right: '1rem', top: '1rem' }}
                 onClick={handleClose}
