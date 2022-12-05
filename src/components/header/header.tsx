@@ -78,7 +78,7 @@ export default function Header() {
             gap: 2,
           }}
         >
-          <Avatar alt="logo" src="logo.jpg" sx={{ width: 50, height: 50 }} />
+          <Avatar alt="logo" src="logo.png" sx={{ width: 50, height: 50 }} />
           {matches680 && (
             <Box>
               <Typography variant="h6">
