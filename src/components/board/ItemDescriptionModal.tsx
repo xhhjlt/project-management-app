@@ -65,6 +65,7 @@ const titleStyles = {
   cursor: 'pointer',
   whiteSpace: 'pre-line',
   p: '8.5px',
+  overflow: 'hidden',
 };
 
 const titleEditStyles = {

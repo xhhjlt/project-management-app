@@ -10,7 +10,7 @@ export default function Root() {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh',
+        height: '100vh',
       }}
     >
       <ErrorBoundary>

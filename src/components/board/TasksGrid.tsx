@@ -140,7 +140,7 @@ export const TasksGrid = () => {
   };
 
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack direction="row" spacing={1} sx={{ height: 'calc(100% - 150px)' }}>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="all-columns" direction="horizontal" type="column">
           {(provided) => (

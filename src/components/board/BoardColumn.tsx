@@ -17,6 +17,7 @@ const paperStyles = {
   backgroundColor: '#f9fbe7', // '#f0f4c3',
   display: 'flex',
   flexDirection: 'column',
+  minHeight: '180px',
 };
 
 export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTasks) => {
@@ -80,7 +81,15 @@ export const BoardColumn = ({ _id, title, order, boardId, tasks }: ColumnWithTas
           <Divider variant="middle" />
           <Droppable droppableId={_id} type="task">
             {(provided) => (
-              <Stack gap={1} mt={1} mb={2} ref={provided.innerRef} {...provided.droppableProps}>
+              <Stack
+                gap={1}
+                mt={1}
+                mb={2}
+                pb={1}
+                sx={{ overflow: 'auto' }}
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
                 {tasks &&
                   tasks
                     .sort((a, b) => a.order - b.order)
