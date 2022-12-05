@@ -153,6 +153,7 @@ export const ItemDescriptionModal = () => {
       };
       reset(nextValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemDescriptionModalOpen.isOpen, item]);
 
   // creating title registration props, including it's default ref
