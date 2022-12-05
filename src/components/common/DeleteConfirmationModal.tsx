@@ -72,7 +72,12 @@ export const DeleteConfirmationModal = () => {
               ?
             </Typography>
             <Stack direction="row" justifyContent="space-evenly">
-              <Button variant="contained" sx={{ width: '7rem' }} onClick={handleClose} color="info">
+              <Button
+                variant="contained"
+                sx={{ width: '7rem' }}
+                onClick={handleClose}
+                color="neutral"
+              >
                 {language === 'EN' ? 'Cancel' : 'Отмена'}
               </Button>
               <Button

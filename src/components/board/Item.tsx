@@ -99,7 +99,6 @@ export const Item = ({ _id, title, order, columnId, size, priority }: Task) => {
                   label={language === 'EN' ? priority : PRIORITY_RUS[priority]}
                   size="small"
                   icon={getIconComponent(PRIORITY[priority])}
-                  sx={{ backgroundColor: '#f5f5f5' }}
                 />
               </Tooltip>
             )}
@@ -114,7 +113,6 @@ export const Item = ({ _id, title, order, columnId, size, priority }: Task) => {
                   label={language === 'EN' ? SIZE_EN[size] : SIZE_RUS[size]}
                   size="small"
                   icon={getIconComponent(SIZE[size])}
-                  sx={{ backgroundColor: '#f5f5f5' }}
                 />
               </Tooltip>
             )}
