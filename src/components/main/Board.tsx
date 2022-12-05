@@ -1,6 +1,8 @@
 import { Paper, Typography, Stack, Divider } from '@mui/material';
 import { BoardMenu } from './BoardMenu';
 import { useNavigate } from 'react-router-dom';
+import { BoardModal } from './BoardModal';
+import { DeleteConfirmationModal } from 'components/common/DeleteConfirmationModal';
 
 const paperStyles = {
   boxSizing: 'border-box',
@@ -57,6 +59,12 @@ export const Board = ({ id, title, description }: BoardType) => {
           </Typography>
         </Stack>
       </Stack>
+      <DeleteConfirmationModal
+        text={{ title: 'board', body: 'board' }}
+        onDelete={deleteBoard}
+        id={id}
+      />
+      <BoardModal boardId={id} />
     </Paper>
   );
 };
