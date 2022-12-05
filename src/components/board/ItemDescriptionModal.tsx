@@ -15,14 +15,7 @@ import {
   TextField,
 } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  closeItemDescriptionModal,
-  ItemPayloadType,
-  ItemType,
-  openDeleteItemModal,
-  selectItemDescriptionModalOpen,
-  setItem,
-} from './boardSlice';
+import { closeItemDescriptionModal, selectItemDescriptionModalOpen } from './boardSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import {
@@ -36,22 +29,12 @@ import {
   FcLowBattery,
 } from 'react-icons/fc';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Form } from 'react-router-dom';
+import { Form, useParams } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-
-const PRIORITY: Record<string, string> = {
-  URGENT: 'FcAlarmClock',
-  HIGH: 'FcVlc',
-  MEDIUM: 'FcNeutralTrading',
-  LOW: 'FcLowBattery',
-};
-
-const SIZE: Record<string, string> = {
-  LARGE: 'FcGlobe',
-  MEDIUM: 'FcLandscape',
-  SMALL: 'FcHome',
-  TINY: 'FcCloseUpMode',
-};
+import { useDeleteTaskMutation, useTaskByIdQuery, useUpdateTaskMutation } from 'services/api/tasks';
+import Task from 'types/api/tasks';
+import { currentLanguage } from 'components/header/langSlice';
+import { openDeleteConfirmationModal } from 'components/common/commonSlice';
 
 const style = {
   boxSizing: 'border-box',
@@ -79,6 +62,7 @@ const titleStyles = {
   cursor: 'pointer',
   whiteSpace: 'pre-line',
   p: '8.5px',
+  overflow: 'hidden',
 };
 
 const titleEditStyles = {
@@ -110,15 +94,48 @@ export const ItemDescriptionModal = () => {
     reset,
     watch,
     formState: { errors },
-  } = useForm<ItemType>();
+  } = useForm<Task>();
   const dispatch = useAppDispatch();
   const containerRef = useRef(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
   const [titleIsEditing, setTitleIsEditing] = useState(false);
   const [descriptionIsEditing, setDescriprionIsEditing] = useState(false);
+  const { id: boardId } = useParams();
+  const { data: item } = useTaskByIdQuery(
+    {
+      _id: itemDescriptionModalOpen.itemId!,
+      boardId: boardId!,
+      columnId: itemDescriptionModalOpen.columnId!,
+    },
+    { skip: !(boardId && itemDescriptionModalOpen.columnId && itemDescriptionModalOpen.itemId) }
+  );
+  const [updateItem] = useUpdateTaskMutation();
+  const language = useAppSelector(currentLanguage);
+  const [deleteItem] = useDeleteTaskMutation();
 
   const title = watch('title');
   const description = watch('description');
+
+  const getDescription = () => {
+    if (description) {
+      return description;
+    }
+    if (item!.description === 'No description provided...') {
+      return (
+        <span style={{ color: '#616161' }}>
+          {language === 'EN' ? 'No description provided...' : 'Описание отсутствует...'}
+        </span>
+      );
+    }
+    if (item!.description && description === undefined) {
+      return item!.description;
+    }
+    return (
+      <span style={{ color: '#616161' }}>
+        {language === 'EN' ? 'No description provided...' : 'Описание отсутствует...'}
+      </span>
+    );
+  };
 
   const handleClose = useCallback(() => {
     dispatch(closeItemDescriptionModal());
@@ -126,13 +143,12 @@ export const ItemDescriptionModal = () => {
   }, [dispatch, reset]);
 
   useEffect(() => {
-    if (itemDescriptionModalOpen.isOpen) {
+    if (itemDescriptionModalOpen.isOpen && item) {
       reset({
-        title: itemDescriptionModalOpen.itemTitle!,
-        description: itemDescriptionModalOpen.itemDescription || '',
+        title: item!.title,
       });
     }
-  }, [itemDescriptionModalOpen.isOpen]);
+  }, [itemDescriptionModalOpen.isOpen, item]);
 
   // creating title registration props, including it's default ref
   const titleFormProps = register('title', {
@@ -161,33 +177,20 @@ export const ItemDescriptionModal = () => {
     }
   }, [titleIsEditing]);
 
-  const onSubmit: SubmitHandler<ItemPayloadType> = (data) => {
-    console.log(data);
-    dispatch(
-      setItem({
-        title: data.title,
-        description: data.description,
-        priority: {
-          value: data.priority as unknown as string,
-          icon: PRIORITY[(data.priority as unknown as string).toUpperCase()],
-        },
-        size: {
-          value: data.size as unknown as string,
-          icon: SIZE[(data.size as unknown as string).toUpperCase()],
-        },
-      })
-    );
+  const onSubmit: SubmitHandler<Task> = (data) => {
+    updateItem({
+      _id: itemDescriptionModalOpen.itemId!,
+      boardId: boardId!,
+      columnId: itemDescriptionModalOpen.columnId!,
+      title: data.title,
+      description: data.description || 'No description provided...',
+      priority: data.priority || '',
+      size: data.size || '',
+      order: item!.order,
+      userId: '',
+      users: [],
+    });
     handleClose();
-  };
-
-  const getDescription = () => {
-    if (description) {
-      return description;
-    }
-    if (itemDescriptionModalOpen.itemDescription && description === undefined) {
-      return itemDescriptionModalOpen.itemDescription;
-    }
-    return <span style={{ color: '#616161' }}>No description provided..</span>;
   };
 
   useEffect(() => {
@@ -198,208 +201,239 @@ export const ItemDescriptionModal = () => {
 
   return (
     <div>
-      <Modal
-        open={itemDescriptionModalOpen.isOpen}
-        onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        ref={containerRef}
-      >
-        <Slide direction="up" in={itemDescriptionModalOpen.isOpen} container={containerRef.current}>
-          <Form onSubmit={handleSubmit(onSubmit)}>
-            <Box sx={style}>
-              <Box sx={titleBlockStyles}>
-                <IconButton
-                  sx={{ p: 0, position: 'absolute', right: '1rem', top: '1rem' }}
-                  onClick={handleClose}
-                >
-                  <ClearOutlinedIcon
-                    sx={{
-                      color: '#616161',
-                      width: 20,
-                    }}
-                  />
-                </IconButton>
-                {!titleIsEditing && (
-                  <Typography
-                    variant="h6"
-                    component="h2"
-                    sx={titleStyles}
-                    onClick={() => setTitleIsEditing(true)}
+      {item && (
+        <Modal
+          open={itemDescriptionModalOpen.isOpen}
+          onClose={handleClose}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          ref={containerRef}
+        >
+          <Slide
+            direction="up"
+            in={itemDescriptionModalOpen.isOpen}
+            container={containerRef.current}
+          >
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <Box sx={style}>
+                <Box sx={titleBlockStyles}>
+                  <IconButton
+                    sx={{ p: 0, position: 'absolute', right: '1rem', top: '1rem' }}
+                    onClick={handleClose}
                   >
-                    {title}
-                  </Typography>
-                )}
-                <TextField
-                  style={{ display: titleIsEditing ? 'inline-block' : 'none' }}
-                  defaultValue={title}
-                  variant="outlined"
-                  sx={titleEditStyles}
-                  autoComplete="off"
-                  {...titleFormProps}
-                  ref={customTitleRef}
-                  error={errors.title ? true : false}
-                  helperText={errors.title && 'You should provide a title'}
-                  multiline
-                  autoFocus
-                  fullWidth
-                  size="small"
-                  onFocus={(e) => (e.target.selectionStart = e.target.value.length)}
-                />
-              </Box>
-              <Divider />
-              <Stack direction="row" sx={{ minHeight: '440px' }}>
-                <Box sx={descriptionBoxStyles}>
-                  {!descriptionIsEditing && (
+                    <ClearOutlinedIcon
+                      sx={{
+                        color: '#616161',
+                        width: 20,
+                      }}
+                    />
+                  </IconButton>
+                  {!titleIsEditing && (
                     <Typography
-                      variant="body1"
-                      sx={descriptionStyles}
-                      onClick={() => setDescriprionIsEditing(true)}
+                      variant="h6"
+                      component="h2"
+                      sx={titleStyles}
+                      onClick={() => setTitleIsEditing(true)}
                     >
-                      {getDescription()}
+                      {title ? title : item!.title}
                     </Typography>
                   )}
-                  {descriptionIsEditing && (
-                    <TextField
-                      defaultValue={
-                        description !== undefined
-                          ? description
-                          : itemDescriptionModalOpen.itemDescription
-                          ? itemDescriptionModalOpen.itemDescription
-                          : ''
-                      }
-                      variant="outlined"
-                      autoComplete="off"
-                      {...register('description')}
-                      multiline
-                      autoFocus
-                      fullWidth
-                      size="small"
-                      onBlur={() => setDescriprionIsEditing(false)}
-                      onFocus={(e) => (e.target.selectionStart = e.target.value.length)}
-                    />
-                  )}
+                  <TextField
+                    style={{ display: titleIsEditing ? 'inline-block' : 'none' }}
+                    defaultValue={title ? title : item!.title}
+                    variant="outlined"
+                    sx={titleEditStyles}
+                    autoComplete="off"
+                    {...titleFormProps}
+                    ref={customTitleRef}
+                    error={errors.title ? true : false}
+                    helperText={errors.title && 'You should provide a title'}
+                    multiline
+                    autoFocus
+                    fullWidth
+                    size="small"
+                    onFocus={(e) => (e.target.selectionStart = e.target.value.length)}
+                  />
                 </Box>
-                <Divider orientation="vertical" flexItem />
-                <Stack
-                  justifyContent={'space-between'}
-                  sx={{ width: '30%', pl: 2, pr: 4, pt: 3, pb: 2 }}
-                >
-                  <Stack spacing={3}>
-                    <Box sx={{ minWidth: 120 }}>
-                      <FormControl size="small" fullWidth>
-                        <InputLabel id="priority-select-label">Priority</InputLabel>
-                        <Select
-                          labelId="priority-select-label"
-                          id="priority-select"
-                          defaultValue={itemDescriptionModalOpen.itemPriority?.value}
-                          label="Priority"
-                          {...register('priority')}
-                        >
-                          <MenuItem value="Urgent">
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <FcAlarmClock />
-                              <Typography>Urgent</Typography>
-                            </Stack>
-                          </MenuItem>
-                          <MenuItem value="High">
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <FcVlc />
-                              <Typography>High</Typography>
-                            </Stack>
-                          </MenuItem>
-                          <MenuItem value="Medium">
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <FcNeutralTrading />
-                              <Typography>Meddium</Typography>
-                            </Stack>
-                          </MenuItem>
-                          <MenuItem value="Low">
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <FcLowBattery />
-                              <Typography>Low</Typography>
-                            </Stack>
-                          </MenuItem>
-                          <MenuItem value="">
-                            <em>None</em>
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                    <Box sx={{ minWidth: 120 }}>
-                      <FormControl size="small" fullWidth>
-                        <InputLabel id="size-select-label">Size</InputLabel>
-                        <Select
-                          labelId="size-select-label"
-                          id="size-select"
-                          defaultValue={itemDescriptionModalOpen.itemSize?.value}
-                          label="Size"
-                          {...register('size')}
-                        >
-                          <MenuItem value="Large">
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <FcGlobe />
-                              <Typography>Large</Typography>
-                            </Stack>
-                          </MenuItem>
-                          <MenuItem value="Medium">
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <FcLandscape />
-                              <Typography>Medium</Typography>
-                            </Stack>
-                          </MenuItem>
-                          <MenuItem value="Small">
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <FcHome />
-                              <Typography>Small</Typography>
-                            </Stack>
-                          </MenuItem>
-                          <MenuItem value="Tiny">
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <FcCloseUpMode />
-                              <Typography>Tiny</Typography>
-                            </Stack>
-                          </MenuItem>
-                          <MenuItem value="">
-                            <em>None</em>
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Stack>
-                  <Stack spacing={2}>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      startIcon={<DeleteIcon />}
-                      onClick={() => {
-                        dispatch(openDeleteItemModal(itemDescriptionModalOpen.itemId!));
-                      }}
-                    >
-                      Delete item
-                    </Button>
-                    <Button variant="contained" color="neutral" onClick={handleClose}>
-                      Cancel
-                    </Button>
-                    <Button variant="contained" component="label">
-                      Save
-                      <input type="submit" hidden />
-                    </Button>
+                <Divider />
+                <Stack direction="row" sx={{ minHeight: '440px' }}>
+                  <Box sx={descriptionBoxStyles}>
+                    {!descriptionIsEditing && (
+                      <Typography
+                        variant="body1"
+                        sx={descriptionStyles}
+                        onClick={() => setDescriprionIsEditing(true)}
+                      >
+                        {getDescription()}
+                      </Typography>
+                    )}
+                    {descriptionIsEditing && (
+                      <TextField
+                        defaultValue={
+                          item!.description === 'No description provided...'
+                            ? ''
+                            : description !== undefined
+                            ? description
+                            : item!.description
+                            ? item!.description
+                            : ''
+                        }
+                        variant="outlined"
+                        autoComplete="off"
+                        {...register('description')}
+                        multiline
+                        autoFocus
+                        fullWidth
+                        size="small"
+                        onBlur={() => setDescriprionIsEditing(false)}
+                        onFocus={(e) => (e.target.selectionStart = e.target.value.length)}
+                      />
+                    )}
+                  </Box>
+                  <Divider orientation="vertical" flexItem />
+                  <Stack
+                    justifyContent={'space-between'}
+                    sx={{ width: '30%', pl: 2, pr: 4, pt: 3, pb: 2 }}
+                  >
+                    <Stack spacing={3}>
+                      <Box sx={{ minWidth: 120 }}>
+                        <FormControl size="small" fullWidth>
+                          <InputLabel id="priority-select-label">
+                            {language === 'EN' ? 'Priority' : 'Приоритет'}
+                          </InputLabel>
+                          <Select
+                            labelId="priority-select-label"
+                            id="priority-select"
+                            defaultValue={item!.priority}
+                            label="Priority"
+                            {...register('priority')}
+                          >
+                            <MenuItem value="Urgent">
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <FcAlarmClock />
+                                <Typography>
+                                  {language === 'EN' ? 'Urgent' : 'Критичный'}
+                                </Typography>
+                              </Stack>
+                            </MenuItem>
+                            <MenuItem value="High">
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <FcVlc />
+                                <Typography>{language === 'EN' ? 'High' : 'Высокий'}</Typography>
+                              </Stack>
+                            </MenuItem>
+                            <MenuItem value="Medium">
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <FcNeutralTrading />
+                                <Typography>{language === 'EN' ? 'Meddium' : 'Средний'}</Typography>
+                              </Stack>
+                            </MenuItem>
+                            <MenuItem value="Low">
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <FcLowBattery />
+                                <Typography>{language === 'EN' ? 'Low' : 'Низкий'}</Typography>
+                              </Stack>
+                            </MenuItem>
+                            <MenuItem value="">
+                              <em>{language === 'EN' ? 'None' : 'Не выбран'}</em>
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Box>
+                      <Box sx={{ minWidth: 120 }}>
+                        <FormControl size="small" fullWidth>
+                          <InputLabel id="size-select-label">
+                            {language === 'EN' ? 'Size' : 'Размер'}
+                          </InputLabel>
+                          <Select
+                            labelId="size-select-label"
+                            id="size-select"
+                            defaultValue={item!.size}
+                            label="Size"
+                            {...register('size')}
+                          >
+                            <MenuItem value="Xlarge">
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <FcGlobe />
+                                <Typography>
+                                  {language === 'EN' ? 'Х-Large' : 'Огромная'}
+                                </Typography>
+                              </Stack>
+                            </MenuItem>
+                            <MenuItem value="Large">
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <FcLandscape />
+                                <Typography>{language === 'EN' ? 'Large' : 'Большая'}</Typography>
+                              </Stack>
+                            </MenuItem>
+                            <MenuItem value="Medium">
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <FcHome />
+                                <Typography>{language === 'EN' ? 'Medium' : 'Средняя'}</Typography>
+                              </Stack>
+                            </MenuItem>
+                            <MenuItem value="Small">
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <FcCloseUpMode />
+                                <Typography>{language === 'EN' ? 'Small' : 'Маленькая'}</Typography>
+                              </Stack>
+                            </MenuItem>
+                            <MenuItem value="">
+                              <em>{language === 'EN' ? 'None' : 'Не выбран'}</em>
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Box>
+                    </Stack>
+                    <Stack spacing={2}>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => {
+                          dispatch(
+                            openDeleteConfirmationModal({
+                              text: {
+                                titleEn: 'item',
+                                titleRus: 'задачу',
+                                bodyEn: 'item from this board',
+                                bodyRus: 'эту задачу с текущей доски',
+                              },
+                              onDelete: () =>
+                                deleteItem({
+                                  _id: item!._id,
+                                  columnId: item!.columnId,
+                                  boardId: boardId!,
+                                }),
+                            })
+                          );
+                        }}
+                      >
+                        {language === 'EN' ? 'Delete item' : 'Удалить'}
+                      </Button>
+                      <Button variant="contained" color="neutral" onClick={handleClose}>
+                        {language === 'EN' ? 'Cancel' : 'Отмена'}
+                      </Button>
+                      <Button variant="contained" component="label">
+                        {language === 'EN' ? 'Save' : 'Сохранить'}
+                        <input type="submit" hidden />
+                      </Button>
+                    </Stack>
                   </Stack>
                 </Stack>
-              </Stack>
-            </Box>
-          </Form>
-        </Slide>
-      </Modal>
+              </Box>
+            </Form>
+          </Slide>
+        </Modal>
+      )}
     </div>
   );
 };

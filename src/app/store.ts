@@ -18,7 +18,9 @@ export const store = configureStore({
     common: commonReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(API.middleware, apiErrorHandler, authStorage),
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(API.middleware, apiErrorHandler, authStorage),
 });
 
 export type AppDispatch = typeof store.dispatch;

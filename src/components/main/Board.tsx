@@ -1,8 +1,6 @@
-import { Paper, Typography, Stack, Divider, Link } from '@mui/material';
-import { useDeleteBoardMutation } from 'services/api/boards';
+import { Paper, Typography, Stack, Divider } from '@mui/material';
 import { BoardMenu } from './BoardMenu';
-import { DeleteConfirmationModal } from 'components/common/DeleteConfirmationModal';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const paperStyles = {
   boxSizing: 'border-box',
@@ -35,11 +33,9 @@ export type BoardType = {
 };
 
 export const Board = ({ id, title, description }: BoardType) => {
-  const [deleteBoard] = useDeleteBoardMutation();
   const navigate = useNavigate();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    console.log((event.target as HTMLElement).tagName);
     if ((event.target as HTMLElement).tagName !== 'button') {
       navigate(`/board/${id}`);
     }
@@ -61,11 +57,6 @@ export const Board = ({ id, title, description }: BoardType) => {
           </Typography>
         </Stack>
       </Stack>
-      <DeleteConfirmationModal
-        text={{ title: 'board', body: 'board' }}
-        onDelete={deleteBoard}
-        id={id}
-      />
     </Paper>
   );
 };

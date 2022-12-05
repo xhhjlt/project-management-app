@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import { DeleteConfirmationModal } from 'components/common/DeleteConfirmationModal';
 import { ErrorBoundary } from 'components/common/errorBoundary';
 import Footer from 'components/footer/footer';
 import Header from 'components/header/header';
@@ -10,10 +11,11 @@ export default function Root() {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh',
+        height: '100vh',
       }}
     >
       <ErrorBoundary>
+        <DeleteConfirmationModal />
         <Header />
         <Outlet />
         <Footer />

@@ -1,8 +1,45 @@
-import { ItemType, openItemDescriptionModal } from './boardSlice';
+import { openItemDescriptionModal } from './boardSlice';
 import { Paper, Typography, Chip, Stack, Tooltip } from '@mui/material';
-import { useAppDispatch } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import * as Icons from 'react-icons/fc';
 import { Draggable } from 'react-beautiful-dnd';
+import Task from 'types/api/tasks';
+import { currentLanguage } from 'components/header/langSlice';
+
+const PRIORITY: Record<string, string> = {
+  Urgent: 'FcAlarmClock',
+  High: 'FcVlc',
+  Medium: 'FcNeutralTrading',
+  Low: 'FcLowBattery',
+};
+
+const SIZE: Record<string, string> = {
+  Xlarge: 'FcGlobe',
+  Large: 'FcLandscape',
+  Medium: 'FcHome',
+  Small: 'FcCloseUpMode',
+};
+
+const PRIORITY_RUS: Record<string, string> = {
+  Urgent: 'Критичный',
+  High: 'Высокий',
+  Medium: 'Средний',
+  Low: 'Низкий',
+};
+
+const SIZE_RUS: Record<string, string> = {
+  Xlarge: 'Огромная',
+  Large: 'Большая',
+  Medium: 'Средняя',
+  Small: 'Маленькая',
+};
+
+const SIZE_EN: Record<string, string> = {
+  Xlarge: 'X-Large',
+  Large: 'Large',
+  Medium: 'Medium',
+  Small: 'Small',
+};
 
 const paperStyles = {
   p: 1,
@@ -18,25 +55,17 @@ const getIconComponent = (icon: string) => {
   return <Component />;
 };
 
-export const Item = ({ id, title, description, priority, size, index }: ItemType) => {
+export const Item = ({ _id, title, order, columnId, size, priority }: Task) => {
   const dispatch = useAppDispatch();
+  const language = useAppSelector(currentLanguage);
 
   return (
-    <Draggable draggableId={id} index={index}>
+    <Draggable draggableId={_id} index={order}>
       {(provided) => (
         <Paper
           sx={paperStyles}
           onClick={() => {
-            dispatch(
-              openItemDescriptionModal({
-                id,
-                title,
-                description,
-                priority,
-                size,
-                index,
-              })
-            );
+            dispatch(openItemDescriptionModal({ itemId: _id, columnId }));
           }}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
@@ -50,22 +79,32 @@ export const Item = ({ id, title, description, priority, size, index }: ItemType
             {title}
           </Typography>
           <Stack direction="row" spacing={1}>
-            {priority.value && (
-              <Tooltip title="Priority" placement="top" followCursor arrow>
+            {priority && (
+              <Tooltip
+                title={language === 'EN' ? 'Priority' : 'Приоритет'}
+                placement="top"
+                followCursor
+                arrow
+              >
                 <Chip
-                  label={priority.value}
+                  label={language === 'EN' ? priority : PRIORITY_RUS[priority]}
                   size="small"
-                  icon={getIconComponent(priority.icon)}
+                  icon={getIconComponent(PRIORITY[priority])}
                   sx={{ backgroundColor: '#f5f5f5' }}
                 />
               </Tooltip>
             )}
-            {size.value && (
-              <Tooltip title="Size" placement="top" followCursor arrow>
+            {size && (
+              <Tooltip
+                title={language === 'EN' ? 'Size' : 'Размер'}
+                placement="top"
+                followCursor
+                arrow
+              >
                 <Chip
-                  label={size.value}
+                  label={language === 'EN' ? SIZE_EN[size] : SIZE_RUS[size]}
                   size="small"
-                  icon={getIconComponent(size.icon)}
+                  icon={getIconComponent(SIZE[size])}
                   sx={{ backgroundColor: '#f5f5f5' }}
                 />
               </Tooltip>

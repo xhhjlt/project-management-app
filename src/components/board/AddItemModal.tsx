@@ -11,12 +11,15 @@ import {
   IconButton,
 } from '@mui/material';
 import { useCallback, useEffect } from 'react';
-import { Form } from 'react-router-dom';
+import { Form, useParams } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { addNewItem, closeItemModal, ItemType, selectItemModalOpen } from './boardSlice';
+import { closeItemModal, selectItemModalOpen } from './boardSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { v4 as uuid } from 'uuid';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
+import { useCreateTaskMutation } from 'services/api/tasks';
+import { CurrentUserId } from 'components/signForms/authSlice';
+import Task from 'types/api/tasks';
+import { currentLanguage } from 'components/header/langSlice';
 
 const style = {
   boxSizing: 'content-box',
@@ -40,9 +43,13 @@ export const AddItemModal = () => {
     handleSubmit,
     reset,
     formState: { errors, isSubmitSuccessful },
-  } = useForm<ItemType>();
+  } = useForm<Task>();
   const itemModalOpen = useAppSelector(selectItemModalOpen);
   const dispatch = useAppDispatch();
+  const [createItem] = useCreateTaskMutation();
+  const { id: boardId } = useParams();
+  const userId = useAppSelector(CurrentUserId);
+  const language = useAppSelector(currentLanguage);
 
   const handleClose = useCallback(() => {
     dispatch(closeItemModal());
@@ -53,12 +60,18 @@ export const AddItemModal = () => {
     handleClose();
   }, [handleClose, isSubmitSuccessful, reset]);
 
-  const onSubmit: SubmitHandler<ItemType> = (data) => {
-    const small_id = uuid().slice(0, 8);
-    data.id = small_id;
-    data.priority = { value: '', icon: '' };
-    data.size = { value: '', icon: '' };
-    dispatch(addNewItem(data));
+  const onSubmit: SubmitHandler<Task> = async (data) => {
+    await createItem({
+      boardId: boardId!,
+      columnId: itemModalOpen.columnId!,
+      title: data.title,
+      description: data.description || 'No description provided...',
+      userId: userId || '',
+      order: 0,
+      size: '',
+      priority: '',
+      users: [],
+    });
   };
 
   return (
@@ -87,23 +100,28 @@ export const AddItemModal = () => {
                 />
               </IconButton>
               <Typography variant="h6" component="h2" sx={{ textAlign: 'center' }}>
-                ADD ITEM
+                {language === 'EN' ? 'ADD ITEM' : 'ДОБАВИТЬ ЗАДАЧУ'}
               </Typography>
               <Stack spacing={2}>
                 <FormControl>
                   <TextField
-                    label="Enter item title"
+                    label={language === 'EN' ? 'Enter item title' : 'Введите название задачи'}
                     defaultValue=""
                     variant="outlined"
                     sx={{ width: '100%' }}
                     autoComplete="off"
                     {...register('title', { required: true })}
                     error={errors.title ? true : false}
-                    helperText={errors.title && 'You should provide a title'}
+                    helperText={
+                      errors.title &&
+                      (language === 'EN'
+                        ? 'You should provide a title'
+                        : 'Вам нужно ввести название задачи')
+                    }
                   />
                 </FormControl>
                 <TextField
-                  label="Enter item description"
+                  label={language === 'EN' ? 'Enter item description' : 'Введите описание задачи'}
                   defaultValue=""
                   variant="outlined"
                   sx={{ width: '100%' }}
@@ -120,10 +138,10 @@ export const AddItemModal = () => {
                   sx={{ width: '7rem' }}
                   onClick={handleClose}
                 >
-                  Cancel
+                  {language === 'EN' ? 'Cancel' : 'Отмена'}
                 </Button>
                 <Button variant="contained" component="label" sx={{ width: '7rem' }}>
-                  Add
+                  {language === 'EN' ? 'Add' : 'Добавить'}
                   <input type="submit" hidden />
                 </Button>
               </Stack>

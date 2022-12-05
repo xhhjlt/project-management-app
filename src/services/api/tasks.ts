@@ -68,8 +68,8 @@ export const tasksApi = API.injectEndpoints({
       invalidatesTags: ['task'],
     }),
     updateTask: builder.mutation<Task, Task>({
-      query: ({ _id, boardId, columnId, ...body }) => ({
-        url: `boards/${boardId}/columns/${columnId}/tasks/${_id}`,
+      query: ({ _id, boardId, ...body }) => ({
+        url: `boards/${boardId}/columns/${body.columnId}/tasks/${_id}`,
         method: 'PUT',
         body,
       }),

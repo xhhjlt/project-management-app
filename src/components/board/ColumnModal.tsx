@@ -11,12 +11,14 @@ import {
   IconButton,
 } from '@mui/material';
 import { useCallback, useEffect } from 'react';
-import { Form } from 'react-router-dom';
+import { Form, useParams } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { addBoardColumn, closeColumnModal, ColumnType, selectColumnModalOpen } from './boardSlice';
+import { closeColumnModal, selectColumnModalOpen } from './boardSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { v4 as uuid } from 'uuid';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
+import { Column } from 'types/api/columns';
+import { useCreateColumnMutation } from 'services/api/columns';
+import { currentLanguage } from 'components/header/langSlice';
 
 const style = {
   boxSizing: 'content-box',
@@ -40,9 +42,12 @@ export const ColumnModal = () => {
     handleSubmit,
     reset,
     formState: { errors, isSubmitSuccessful },
-  } = useForm<ColumnType>();
+  } = useForm<Column>();
   const columnModalOpen = useAppSelector(selectColumnModalOpen);
   const dispatch = useAppDispatch();
+  const [createColumn] = useCreateColumnMutation();
+  const { id: boardId } = useParams();
+  const language = useAppSelector(currentLanguage);
 
   const handleClose = useCallback(() => {
     dispatch(closeColumnModal());
@@ -53,11 +58,12 @@ export const ColumnModal = () => {
     handleClose();
   }, [handleClose, isSubmitSuccessful, reset]);
 
-  const onSubmit: SubmitHandler<ColumnType> = (data) => {
-    const small_id = uuid().slice(0, 8);
-    data.id = small_id;
-    data.items = [];
-    dispatch(addBoardColumn(data));
+  const onSubmit: SubmitHandler<Column> = (data) => {
+    createColumn({
+      boardId: boardId!,
+      title: data.title,
+      order: 0,
+    });
   };
 
   return (
@@ -86,18 +92,23 @@ export const ColumnModal = () => {
                 />
               </IconButton>
               <Typography variant="h6" component="h2" sx={{ textAlign: 'center' }}>
-                ADD COLUMN
+                {language === 'EN' ? 'ADD COLUMN' : 'ДОБАВИТЬ КОЛОНКУ'}
               </Typography>
               <FormControl>
                 <TextField
-                  label="Enter column title"
+                  label={language === 'EN' ? 'Enter column title' : 'Введите название колонки'}
                   defaultValue=""
                   variant="outlined"
                   sx={{ width: '100%' }}
                   autoComplete="off"
                   {...register('title', { required: true })}
                   error={errors.title ? true : false}
-                  helperText={errors.title && 'You should provide column title'}
+                  helperText={
+                    errors.title &&
+                    (language === 'EN'
+                      ? 'You should provide column title'
+                      : 'Вам нужно ввести название колонки')
+                  }
                 />
               </FormControl>
               <Stack direction="row" justifyContent="space-evenly">
@@ -107,10 +118,10 @@ export const ColumnModal = () => {
                   sx={{ width: '7rem' }}
                   onClick={handleClose}
                 >
-                  Cancel
+                  {language === 'EN' ? 'Cancel' : 'Отмена'}
                 </Button>
                 <Button variant="contained" component="label" sx={{ width: '7rem' }}>
-                  Add
+                  {language === 'EN' ? 'Add' : 'Добавить'}
                   <input type="submit" hidden />
                 </Button>
               </Stack>

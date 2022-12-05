@@ -1,28 +1,89 @@
 import { Button, Stack } from '@mui/material';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { ColumnModal } from './ColumnModal';
-import { useAppSelector, useAppDispatch } from 'app/hooks';
-import {
-  addColumnOnDrop,
-  addItemOnDrop,
-  deleteColumnOnDrag,
-  deleteItemOnDrag,
-  openColumnModal,
-  selectBoardColumns,
-} from './boardSlice';
-import { Column } from './Column';
-import { DeleteColumnModal } from './DeleteColumnModal';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { openColumnModal } from './boardSlice';
 import { AddItemModal } from './AddItemModal';
 import { ItemDescriptionModal } from './ItemDescriptionModal';
-import { DeleteItemModal } from './DeleteItemModal';
 import { DragDropContext, DropResult, Droppable } from 'react-beautiful-dnd';
+import { useParams } from 'react-router-dom';
+import { useAllColumnsInBoardQuery, useColumnsSetUpdateOrderMutation } from 'services/api/columns';
+import { BoardColumn } from './BoardColumn';
+import { useEffect, useState } from 'react';
+import { useTasksSetByBoardIdQuery, useTasksSetUpdateOrderMutation } from 'services/api/tasks';
+import Task from 'types/api/tasks';
+import { currentLanguage } from 'components/header/langSlice';
+import { Column } from 'types/api/columns';
+
+export type ColumnWithTasks = {
+  _id: string;
+  title: string;
+  order: number;
+  boardId: string;
+  tasks: Array<Task>;
+};
 
 export const TasksGrid = () => {
-  const boardColumns = useAppSelector(selectBoardColumns);
   const dispatch = useAppDispatch();
+  const { id } = useParams();
+  const { data: columnsOnBoard } = useAllColumnsInBoardQuery(id as string);
+  const [columnsWithTasks, setColumnsWithTasks] = useState<Array<ColumnWithTasks>>();
+  const language = useAppSelector(currentLanguage);
+
+  const [updateOrder] = useColumnsSetUpdateOrderMutation();
+  const { data: tasksOnBoard } = useTasksSetByBoardIdQuery(id as string);
+  const [updateTaskOrder] = useTasksSetUpdateOrderMutation();
+
+  const linkColumnsWithTasks = (columns: Column[] | undefined, tasks: Task[] | undefined) =>
+    columns &&
+    columns.map((col) => {
+      const filteredtasks = tasks?.filter((t) => t.columnId === col._id) || [];
+      return {
+        ...col,
+        tasks: filteredtasks,
+      };
+    });
+
+  const repairOrders = (columnsWithTasks: ColumnWithTasks[] | undefined) => {
+    let fixed = false;
+    const newColumnsWithTasks = columnsWithTasks?.map((col: ColumnWithTasks) => {
+      col.tasks.sort((a: Task, b: Task) => a.order - b.order);
+      return {
+        ...col,
+        tasks: col.tasks.map((task: Task, order: number) => {
+          if (task.order !== order) {
+            fixed = true;
+            return { ...task, order };
+          }
+          return task;
+        }),
+      };
+    });
+    if (fixed) {
+      const newTasksOnBoard = newColumnsWithTasks?.map((c: ColumnWithTasks) => c.tasks).flat();
+      if (newTasksOnBoard) {
+        updateTaskOrder(
+          newTasksOnBoard.map((item: Task) => ({
+            _id: item._id,
+            order: item.order,
+            columnId: item.columnId,
+          }))
+        );
+      }
+    }
+    setColumnsWithTasks(newColumnsWithTasks);
+  };
+
+  useEffect(() => {
+    if (columnsOnBoard) {
+      const columnsWithTasks = linkColumnsWithTasks(columnsOnBoard, tasksOnBoard);
+      repairOrders(columnsWithTasks);
+    }
+  }, [columnsOnBoard, tasksOnBoard]);
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
+
     if (!destination) {
       return;
     }
@@ -31,43 +92,108 @@ export const TasksGrid = () => {
     }
 
     if (type === 'column') {
-      const draggableColumn = boardColumns.find((col) => col.id === draggableId)!;
+      const from = source.index;
+      const to = destination.index;
 
-      dispatch(deleteColumnOnDrag(draggableId));
+      const fixOrders = (col: ColumnWithTasks) => {
+        if (col.order < Math.min(from, to) || col.order > Math.max(from, to)) {
+          return { ...col, order: col.order };
+        }
+        if (col.order === from) {
+          return { ...col, order: to };
+        }
+        return { ...col, order: col.order + Math.sign(from - to) };
+      };
 
-      dispatch(
-        addColumnOnDrop({
-          draggableColumn,
-          destinationIndex: destination.index,
-        })
-      );
+      if (columnsWithTasks) {
+        const newCopyOfData = columnsWithTasks.map(fixOrders);
+        updateOrder(
+          newCopyOfData.map((col: ColumnWithTasks) => ({ _id: col._id, order: col.order }))
+        );
+        setColumnsWithTasks(newCopyOfData);
+      }
     } else {
-      const srcColumn = boardColumns.find((col) => col.id === source.droppableId)!;
-      const draggableItem = srcColumn!.items![source.index];
+      const srcColumnId = source.droppableId;
+      const destColumnId = destination.droppableId;
+      const from = source.index;
+      const to = destination.index;
 
-      dispatch(deleteItemOnDrag({ draggableId, srcColumnId: source.droppableId }));
-      dispatch(
-        addItemOnDrop({
-          draggableItem,
-          destColumnId: destination.droppableId,
-          destinationIndex: destination.index,
-        })
-      );
+      const fixTasksOrders = (item: Task) => {
+        // drag-n-drop in one column
+        if (srcColumnId === destColumnId && item.columnId === srcColumnId) {
+          if (item.order < Math.min(from, to) || item.order > Math.max(from, to)) {
+            return { ...item, order: item.order };
+          }
+          if (item.order === from) {
+            return { ...item, order: to };
+          }
+          return { ...item, order: item.order + Math.sign(from - to) };
+        }
+        // order tasks in source column, not draggable item
+        if (
+          srcColumnId !== destColumnId &&
+          item.columnId === srcColumnId &&
+          item._id !== draggableId
+        ) {
+          if (item.order < from) {
+            return { ...item, order: item.order };
+          }
+          return { ...item, order: item.order - 1 };
+        }
+        // order tasks in droppable column, not draggable item
+        if (
+          srcColumnId !== destColumnId &&
+          item.columnId === destColumnId &&
+          item._id !== draggableId
+        ) {
+          if (item.order < to) {
+            return { ...item, order: item.order };
+          }
+          return { ...item, order: item.order + 1 };
+        }
+        // draggable item
+        if (item._id === draggableId) {
+          return { ...item, order: to, columnId: destColumnId };
+        }
+        // tasks in other columns
+        return { ...item, order: item.order };
+      };
+
+      if (tasksOnBoard) {
+        const newCopyOfTasks = tasksOnBoard.map(fixTasksOrders);
+        updateTaskOrder(
+          newCopyOfTasks.map((item: Task) => ({
+            _id: item._id,
+            order: item.order,
+            columnId: item.columnId,
+          }))
+        );
+        setColumnsWithTasks(linkColumnsWithTasks(columnsOnBoard, newCopyOfTasks));
+      }
     }
   };
 
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack direction="row" spacing={1} sx={{ height: 'calc(100% - 150px)' }}>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="all-columns" direction="horizontal" type="column">
           {(provided) => (
             <Stack direction="row" spacing={1} {...provided.droppableProps} ref={provided.innerRef}>
-              {boardColumns.length > 0 &&
-                boardColumns.map((column, index) => {
-                  return (
-                    <Column key={column.id} id={column.id} title={column.title} index={index} />
-                  );
-                })}
+              {columnsWithTasks &&
+                columnsWithTasks
+                  .sort((a, b) => a.order - b.order)
+                  .map((column, index) => {
+                    return (
+                      <BoardColumn
+                        key={column._id}
+                        _id={column._id}
+                        title={column.title}
+                        order={index}
+                        boardId={id!}
+                        tasks={column.tasks}
+                      />
+                    );
+                  })}
 
               {provided.placeholder}
             </Stack>
@@ -76,12 +202,12 @@ export const TasksGrid = () => {
       </DragDropContext>
       <Button
         variant="contained"
-        size={boardColumns.length === 0 ? 'large' : 'small'}
-        startIcon={boardColumns.length === 0 && <AddRoundedIcon />}
+        size={columnsOnBoard ? 'large' : 'small'}
+        startIcon={columnsOnBoard?.length === 0 && <AddRoundedIcon />}
         sx={{
           boxSizing: 'border-box',
-          width: 300,
-          ...(boardColumns.length > 0 && { width: 'auto' }),
+          width: 'auto',
+          ...(columnsOnBoard?.length === 0 && { width: 300 }),
           height: 45,
           userSelect: 'none',
         }}
@@ -89,13 +215,15 @@ export const TasksGrid = () => {
           dispatch(openColumnModal());
         }}
       >
-        {boardColumns.length === 0 ? <span>Add column</span> : <AddRoundedIcon />}
+        {columnsOnBoard?.length === 0 ? (
+          <span>{language === 'EN' ? 'Add column' : 'Добавить колонку'}</span>
+        ) : (
+          <AddRoundedIcon />
+        )}
       </Button>
       <ColumnModal />
-      <DeleteColumnModal />
       <AddItemModal />
       <ItemDescriptionModal />
-      <DeleteItemModal />
     </Stack>
   );
 };
