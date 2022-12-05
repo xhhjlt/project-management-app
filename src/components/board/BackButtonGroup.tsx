@@ -4,8 +4,9 @@ import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import { alpha, styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link as RouterLink } from 'react-router-dom';
-import { useAppSelector } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { currentLanguage } from 'components/header/langSlice';
+import { setTaskSearchValue } from './boardSlice';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -60,6 +61,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export const BackButtonGroup = () => {
   const language = useAppSelector(currentLanguage);
+  const dispatch = useAppDispatch();
 
   return (
     <Stack direction="row" spacing={2}>
@@ -78,8 +80,8 @@ export const BackButtonGroup = () => {
           <SearchIcon />
         </SearchIconWrapper>
         <StyledInputBase
-          placeholder={language === 'EN' ? 'Search…' : 'Поиск...'}
-          inputProps={{ 'aria-label': 'search' }}
+          placeholder={language === 'EN' ? 'Search task…' : 'Поиск задачи...'}
+          onChange={(e) => dispatch(setTaskSearchValue(e.target.value))}
         />
       </Search>
     </Stack>

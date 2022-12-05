@@ -25,18 +25,16 @@ export type ItemModalPayloadType = {
 
 export type BoardState = {
   columnModalOpen: boolean;
-  deleteColumnModalOpen: DeleteColumnType;
   itemModalOpen: CreateItemModalType;
   itemDescriptionModalOpen: ItemModalType;
-  deleteItemModalOpen: ItemModalType;
+  taskSearchValue: string;
 };
 
 const initialState: BoardState = {
   columnModalOpen: false,
-  deleteColumnModalOpen: { isOpen: false, columnId: null },
   itemModalOpen: { isOpen: false, columnId: null },
   itemDescriptionModalOpen: { isOpen: false, itemId: null, columnId: null },
-  deleteItemModalOpen: { isOpen: false, itemId: null, columnId: null },
+  taskSearchValue: '',
 };
 
 export const boardSlice = createSlice({
@@ -48,13 +46,6 @@ export const boardSlice = createSlice({
     },
     closeColumnModal: (state) => {
       state.columnModalOpen = false;
-    },
-    openDeleteColumnModal: (state, action: PayloadAction<Column>) => {
-      state.deleteColumnModalOpen.isOpen = true;
-      state.deleteColumnModalOpen.columnId = action.payload._id;
-    },
-    closeDeleteColumnModal: (state) => {
-      state.deleteColumnModalOpen.isOpen = false;
     },
     openItemModal: (state, action: PayloadAction<Column>) => {
       state.itemModalOpen.isOpen = true;
@@ -71,13 +62,8 @@ export const boardSlice = createSlice({
     closeItemDescriptionModal: (state) => {
       state.itemDescriptionModalOpen.isOpen = false;
     },
-    openDeleteItemModal: (state, action: PayloadAction<ItemModalPayloadType>) => {
-      state.deleteItemModalOpen.isOpen = true;
-      state.deleteItemModalOpen.itemId = action.payload.itemId;
-      state.deleteItemModalOpen.columnId = action.payload.columnId;
-    },
-    closeDeleteItemModal: (state) => {
-      state.deleteItemModalOpen.isOpen = false;
+    setTaskSearchValue: (state, action: PayloadAction<string>) => {
+      state.taskSearchValue = action.payload;
     },
   },
 });
@@ -85,21 +71,17 @@ export const boardSlice = createSlice({
 export const {
   openColumnModal,
   closeColumnModal,
-  openDeleteColumnModal,
-  closeDeleteColumnModal,
   openItemModal,
   closeItemModal,
   openItemDescriptionModal,
   closeItemDescriptionModal,
-  openDeleteItemModal,
-  closeDeleteItemModal,
+  setTaskSearchValue,
 } = boardSlice.actions;
 
 export const selectColumnModalOpen = (state: RootState) => state.board.columnModalOpen;
-export const selectDeleteColumnModalOpen = (state: RootState) => state.board.deleteColumnModalOpen;
 export const selectItemModalOpen = (state: RootState) => state.board.itemModalOpen;
 export const selectItemDescriptionModalOpen = (state: RootState) =>
   state.board.itemDescriptionModalOpen;
-export const selectDeleteItemModalOpen = (state: RootState) => state.board.deleteItemModalOpen;
+export const selectTaskSearchValue = (state: RootState) => state.board.taskSearchValue;
 
 export default boardSlice.reducer;
