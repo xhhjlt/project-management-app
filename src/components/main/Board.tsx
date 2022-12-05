@@ -1,5 +1,4 @@
 import { Paper, Typography, Stack, Divider, useTheme } from '@mui/material';
-import { useDeleteBoardMutation } from 'services/api/boards';
 import { BoardMenu } from './BoardMenu';
 import { useNavigate } from 'react-router-dom';
 import { BoardModal } from './BoardModal';
